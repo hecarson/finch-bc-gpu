@@ -1,33 +1,32 @@
-const BCExprArgs = Dict{String, String}
-
 const INDENT = ' ' ^ 4
 
 """
-index_vars: parameters that should be treated as index vars, in loop order
-add_finch_code: whether Finch code should be added
-bc_expr_args_map: mapping from bid to BC args, useful for having different arguments for different bids
-finch_variables: parameters that are Finch variables
+Generates a CUDA kernel for one boundary.
+
+index_vars: Parameters that should be treated as index vars, in loop order
+add_finch_code: Whether Finch code should be added
+bc_expr_args: Mapping from parameter names to expressions
+finch_variables: Parameters that are Finch variables
 """
-function gen_bc_cuda(input_code::String; index_vars::Vector{String} = [], add_finch_code = true,
-bc_expr_args_map::Vector{BCExprArgs} = Vector{BCExprArgs}(), finch_variables::Vector{String} = Vector{String}())::String
+function gen_bc_cuda(input_code::String; index_vars::Vector{String} = [], add_finch_code = true, bi::Int = 0,
+bc_expr_args::Dict{String, String} = Dict{String, String}(), finch_variables::Vector{String} = Vector{String}())::String
     func_expr = Meta.parse(input_code)
     Base.remove_linenums!(func_expr)
     code_buffer = IOBuffer()
 
-    gen_kernel_header(code_buffer, func_expr, index_vars, add_finch_code, bc_expr_args_map)
-
+    gen_kernel_header(code_buffer, func_expr, index_vars, add_finch_code, bi, bc_expr_args)
     println(code_buffer, "@inbounds begin")
 
-    # All index vars, in loop order
+    # All index vars including Finch index vars, in loop order
     all_index_vars = copy(index_vars)
     if add_finch_code
-        pushfirst!(all_index_vars, "bi", "fi")
+        pushfirst!(all_index_vars, "fi")
     end
-    gen_index_vars(code_buffer, all_index_vars)
+    gen_index_vars(code_buffer, bi, all_index_vars)
 
     println(code_buffer)
     if add_finch_code
-        gen_bc_body_finch(code_buffer, func_expr, index_vars, bc_expr_args_map, finch_variables)
+        gen_bc_body_finch(code_buffer, func_expr, index_vars, bc_expr_args, finch_variables)
     else
         func_body = func_expr.args[2]
         gen_main_body!(code_buffer, func_body)
@@ -42,15 +41,14 @@ bc_expr_args_map::Vector{BCExprArgs} = Vector{BCExprArgs}(), finch_variables::Ve
 end
 
 function gen_kernel_header(code_buffer::IOBuffer, func_expr::Expr, index_args::Vector{String},
-add_finch_code::Bool, bc_expr_args_map::Vector{BCExprArgs})
+add_finch_code::Bool, bi::Int, bc_expr_args::Dict{String, String})
     call_expr = func_expr.args[1]
-    print(code_buffer, "function $(call_expr.args[1])_gpu(")
+    print(code_buffer, "function $(call_expr.args[1])_bi_$(bi)_gpu(")
 
-    bc_params_with_expr_args::Set{String} = Set()
-    for args in bc_expr_args_map
-        for param in keys(args)
-            push!(bc_params_with_expr_args, param)
-        end
+    # Set of parameters that have a provided expression argument
+    bc_expr_arg_params::Set{String} = Set()
+    for param in keys(bc_expr_args)
+        push!(bc_expr_arg_params, param)
     end
     
     kernel_params::Vector{String} = []
@@ -61,7 +59,7 @@ add_finch_code::Bool, bc_expr_args_map::Vector{BCExprArgs})
         if param_str in index_args
             # Exclude index vars from kernel params, but add param for max value
             push!(kernel_params, "max_$(param_str)")
-        elseif param_str in bc_params_with_expr_args
+        elseif param_str in bc_expr_arg_params
             # Params with expression args will be given a value in the kernel body
             continue
         else
@@ -70,7 +68,7 @@ add_finch_code::Bool, bc_expr_args_map::Vector{BCExprArgs})
     end
 
     if add_finch_code
-        push!(kernel_params, "max_bi", "max_fi")
+        push!(kernel_params, "max_fi")
         push!(kernel_params, "mesh_bdryface", "mesh_face2element", "mesh_bids", "geometric_factors_volume",
         "geometric_factors_area", "dofs_per_node", "faceCenters", "dim_faceCenters", "facex", "t")
         push!(kernel_params, "boundary_flux", "boundary_dof_index", "global_vector")
@@ -95,8 +93,8 @@ function get_param_str(param)::String
 end
 
 "Generates index vars with a loop order that is the same as the order of the given index vars"
-function gen_index_vars(code_buffer::IOBuffer, index_vars::Vector{String})
-    # Map thread ID to (index1, index2, ...)
+function gen_index_vars(code_buffer::IOBuffer, bi::Int, index_vars::Vector{String})
+    # Map thread ID to (index1, index2, ...) tuple
     
     println(code_buffer, "thread_id = threadIdx().x + blockDim().x * (blockIdx().x - 1)")
 
@@ -109,6 +107,7 @@ function gen_index_vars(code_buffer::IOBuffer, index_vars::Vector{String})
 
     println(code_buffer)
     println(code_buffer, "# All index vars")
+    println(code_buffer, "bi = $(bi)")
     for i in eachindex(index_vars)
         index_var = index_vars[i]
 
@@ -137,7 +136,7 @@ function gen_main_body(code_buffer::IOBuffer, func_body::Expr)
 end
 
 function gen_bc_body_finch(code_buffer::IOBuffer, func_expr::Expr, bc_index_vars::Vector{String},
-bc_expr_args_map::Vector{BCExprArgs}, finch_variables::Vector{String})
+bc_expr_args::Dict{String, String}, finch_variables::Vector{String})
     println(code_buffer, "fid = mesh_bdryface[fi,bi]")
     println(code_buffer, "eid = mesh_face2element[1,fid]");
     println(code_buffer, "fbid = mesh_bids[bi]");
@@ -171,19 +170,10 @@ bc_expr_args_map::Vector{BCExprArgs}, finch_variables::Vector{String})
     println(code_buffer, "y = dim_faceCenters >= 2 ? facex[thread_id, 2] : 0.0")
     println(code_buffer, "z = dim_faceCenters >= 2 ? facex[thread_id, 3] : 0.0")
     
-    # From bc_expr_args_map, for each fbid, output arg expressions
-    for fbid in eachindex(bc_expr_args_map)
-        if fbid == 1
-            println(code_buffer, "if fbid == $(fbid)")
-        else
-            println(code_buffer, "elseif fbid == $(fbid)")
-        end
-
-        for (param, arg) in bc_expr_args_map[fbid]
-            println(code_buffer, "$(INDENT)$(param) = $(arg)")
-        end
+    # Output expression arguments to BC
+    for (param, arg) in bc_expr_args
+        println(code_buffer, "$(param) = $(arg)")
     end
-    println(code_buffer, "end")
     
     println(code_buffer)
     func_body = deepcopy(func_expr.args[2])
@@ -194,7 +184,7 @@ bc_expr_args_map::Vector{BCExprArgs}, finch_variables::Vector{String})
     println(code_buffer, "# Output")
     println(code_buffer, "boundary_flux[thread_id] = result * area_over_volume")
     println(code_buffer, "boundary_dof_index[thread_id] = row_index")
-    println(code_buffer, "CUDA.@atomic global_vector[row_index] = global_vector[row_index] + boundary_flux[thread_id]")
+    println(code_buffer, "global_vector[row_index] = global_vector[row_index] + boundary_flux[thread_id]")
 
     return
 end

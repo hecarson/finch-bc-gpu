@@ -6,7 +6,7 @@ bc_expr_args_map=[
     Dict("temp" => "300"),
     Dict("temp" => "300"),
     Dict("temp" => "300"),
-    Dict("temp" =>"300 + 50*exp(-(x-262e-6)*(x-262e-6)/(5e-9))")
+    Dict("temp" => "300 + 50*exp(-(x-262e-6)*(x-262e-6)/(5e-9))")
 ]
 cuda_code = gen_bc_cuda(input_code, index_vars=["band", "dir"], add_finch_code=true, bc_expr_args_map=bc_expr_args_map,
 finch_variables=["intensity"])

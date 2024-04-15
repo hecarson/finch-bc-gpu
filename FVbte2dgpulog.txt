@@ -13,11 +13,11 @@
 9.	Building simple quad mesh with nx*nx elements, nx=[5, 5]
 10.	Building full grid from mesh data. Types = FV
 11.	Building reference element: 2D, order=1, nfaces=4
-12.	Initial node setup: 0.5441811084747314
-13.	Remove duplicate nodes: 1.1913018226623535
-14.	Vertex, face, bdry setup: 0.2060389518737793
-15.	Remove duplicate bdry nodes: 0.029803991317749023
-16.	Total grid building time: 12.410648107528687
+12.	Initial node setup: 0.5077509880065918
+13.	Remove duplicate nodes: 1.0937860012054443
+14.	Vertex, face, bdry setup: 0.19580698013305664
+15.	Remove duplicate bdry nodes: 0.028929948806762695
+16.	Total grid building time: 11.784341096878052
 17.	Added mesh with 36 vertices and 25 elements.
 18.	Full grid has 36 nodes.
 19.	Added boundary ID: 2 including [6, 0] nodes, [5, 0] faces.
@@ -855,32 +855,32 @@ end # function
 94.	While importing, nothing was found for G_last
 95.	While importing, no solve function was found for G_next
 96.	While importing, nothing was found for G_next
-97.	Imported code from finch-gpu-test/bte2dgpucode-gpu-newkernel-outgv.jl
+97.	Imported code from finch-gpu-test/bte2dgpucode-gpu-newkernel.jl
 98.	Set time stepper values to dt=1.0e-12, Nsteps=100
 99.	Solved for [I]
 100.	Closed generated code files.
 101.	 ────────────────────────────────────────────────────────────────────────────────
                                         Time                    Allocations      
                                ───────────────────────   ────────────────────────
-       Tot / % measured:            94.4s /  71.4%           5.09GiB /  39.4%    
+       Tot / % measured:            84.2s /  73.8%           4.97GiB /  37.9%    
 
  Section               ncalls     time    %tot     avg     alloc    %tot      avg
  ────────────────────────────────────────────────────────────────────────────────
- Mesh                       1    26.9s   39.9%   26.9s    518MiB   25.2%   518MiB
-   mesh2grid                1    12.5s   18.5%   12.5s    269MiB   13.1%   269MiB
-   bids                     1    1.05s    1.6%   1.05s   67.7MiB    3.3%  67.7MiB
-   geo factors              1    588ms    0.9%   588ms   19.0MiB    0.9%  19.0MiB
-     fv_info                1    103ms    0.2%   103ms   4.08MiB    0.2%  4.08MiB
-   gen/read                 1    469ms    0.7%   469ms   8.71MiB    0.4%  8.71MiB
- CodeGen                    1    20.4s   30.3%   20.4s    511MiB   24.9%   511MiB
- Solve                      1    20.1s   29.9%   20.1s   1.00GiB   49.9%  1.00GiB
-   FV_solve                 1    20.1s   29.8%   20.1s   1.00GiB   49.9%  1.00GiB
-     GPU alloc              1    9.40s   13.9%   9.40s    522MiB   25.4%   522MiB
-     time_steps             1    4.99s    7.4%   4.99s    191MiB    9.3%   191MiB
-       step_assembly      100    3.27s    4.9%  32.7ms    113MiB    5.5%  1.13MiB
-         bdry_vals        100    1.92s    2.9%  19.2ms   48.2MiB    2.3%   493KiB
-       update_sol         100    529ms    0.8%  5.29ms   4.56MiB    0.2%  46.7KiB
-     allocate               1   7.09μs    0.0%  7.09μs   31.8KiB    0.0%  31.8KiB
+ Mesh                       1    25.5s   41.1%   25.5s    518MiB   26.9%   518MiB
+   mesh2grid                1    11.8s   19.0%   11.8s    269MiB   14.0%   269MiB
+   bids                     1    1.03s    1.7%   1.03s   67.6MiB    3.5%  67.6MiB
+   geo factors              1    571ms    0.9%   571ms   19.0MiB    1.0%  19.0MiB
+     fv_info                1   99.2ms    0.2%  99.2ms   4.15MiB    0.2%  4.15MiB
+   gen/read                 1    464ms    0.7%   464ms   8.71MiB    0.5%  8.71MiB
+ CodeGen                    1    19.7s   31.6%   19.7s    511MiB   26.6%   511MiB
+ Solve                      1    16.9s   27.3%   16.9s    896MiB   46.5%   896MiB
+   FV_solve                 1    16.9s   27.2%   16.9s    896MiB   46.5%   896MiB
+     GPU alloc              1    7.04s   11.3%   7.04s    398MiB   20.7%   398MiB
+     time_steps             1    4.36s    7.0%   4.36s    210MiB   10.9%   210MiB
+       step_assembly      100    3.94s    6.3%  39.4ms    189MiB    9.8%  1.89MiB
+         bdry_vals        100    1.80s    2.9%  18.0ms   57.4MiB    3.0%   587KiB
+       update_sol         100    136ms    0.2%  1.36ms   4.56MiB    0.2%  46.7KiB
+     allocate               1   8.03μs    0.0%  8.03μs   31.8KiB    0.0%  31.8KiB
  ────────────────────────────────────────────────────────────────────────────────
 
 102.	Completed. Closing Log.

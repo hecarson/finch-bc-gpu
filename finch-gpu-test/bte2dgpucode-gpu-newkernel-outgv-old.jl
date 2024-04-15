@@ -110,101 +110,7 @@ function gpu_assembly_kernel(mesh_elemental_order_gpu, variables_3_values_gpu, v
     return nothing
 end # GPU kernel
 
-function gpu_bdry_vals_kernel(intensity, vg, sx, sy, center_freq, polarizations, delta_freq, g20xi, g20wi, max_band,
-max_dir, normal, max_bi, max_fi, mesh_bdryface, mesh_face2element, mesh_bids, geometric_factors_volume,
-geometric_factors_area, dofs_per_node, faceCenters, dim_faceCenters, facex, t, boundary_flux, boundary_dof_index,
-global_vector)
-    @inbounds begin
-    thread_id = threadIdx().x + blockDim().x * (blockIdx().x - 1)
-    if thread_id > max_bi * max_fi * max_band * max_dir
-        return
-    end
-    
-    # All index vars
-    bi = (thread_id - 1) ÷ (max_fi * max_band * max_dir) + 1
-    fi = ((thread_id - 1) ÷ (max_band * max_dir)) % max_fi + 1
-    band = ((thread_id - 1) ÷ (max_dir)) % max_band + 1
-    dir = ((thread_id - 1) ÷ (1)) % max_dir + 1
-    
-    fid = mesh_bdryface[fi,bi]
-    eid = mesh_face2element[1,fid]
-    fbid = mesh_bids[bi]
-    volume = geometric_factors_volume[eid]
-    area = geometric_factors_area[fid]
-    area_over_volume = (area / volume)
-    index_offset = (band - 1) * (max_dir) + (dir - 1) * (1)
-    row_index = index_offset + 1 + dofs_per_node * (eid - 1)
-    for i in 1:dim_faceCenters
-        facex[thread_id, i] = faceCenters[i, fid]
-    end
-    x = facex[thread_id, 1]
-    y = dim_faceCenters >= 2 ? facex[thread_id, 2] : 0.0
-    z = dim_faceCenters >= 2 ? facex[thread_id, 3] : 0.0
-    if fbid == 1
-        temp = 300
-    elseif fbid == 2
-        temp = 300
-    elseif fbid == 3
-        temp = 300
-    elseif fbid == 4
-        temp = 300 + 50*exp(-(x-262e-6)*(x-262e-6)/(5e-9))
-    end
-    
-    # Main function body
-    ndir::Int = max_dir
-    sdotn::Float64 = sx[dir] * normal[1, fid] + sy[dir] * normal[2, fid]
-    if sdotn > 0
-        interior_intensity::Float64 = intensity[dir + (band - 1) * ndir, eid]
-        result = -(vg[band]) * interior_intensity * sdotn
-    else
-        center_f::Float64 = center_freq[band]
-        polarization::Int = polarizations[band]
-        delta_f::Float64 = delta_freq[band]
-        temp::Float64 = Float64(temp)
-        hobol = 7.63822401661014e-12
-        vs_TAS = 5230.0
-        c_TAS = -2.26e-7
-        c_LAS = -2.0e-7
-        vs_LAS = 9010.0
-        freq = center_f
-        dw = delta_f
-        vs::Float64 = 0.0
-        c::Float64 = 0.0
-        if polarization == 0
-            vs = vs_TAS
-            c = c_TAS
-            extra_factor = 2
-        else
-            vs = vs_LAS
-            c = c_LAS
-            extra_factor = 1
-        end
-        const_part = ((1.062861036647414e-37dw) / 2) / (c * c)
-        iso_intensity = 0.0
-        for gi = 1:20
-            fi2 = freq + (dw / 2) * g20xi[gi]
-            K2 = (-vs + sqrt(vs * vs + 4 * fi2 * c)) ^ 2
-            iso_intensity += ((fi2 * K2) / (exp((hobol * fi2) / temp) - 1)) * g20wi[gi] * extra_factor
-        end
-        iso_intensity *= const_part
-        result = -(vg[band]) * iso_intensity * sdotn
-    end
-    
-    
-    # Output
-    boundary_flux[thread_id] = result * area_over_volume
-    boundary_dof_index[thread_id] = row_index
-    CUDA.@atomic global_vector[row_index] = global_vector[row_index] + boundary_flux[thread_id]
-
-    # DEBUG
-    # t = Float64(t)
-    # if t == 0
-    #     @cuprintln("bi $bi fi $fi band $band dir $dir : $result")
-    # end
-    
-    end # inbounds
-    return
-end
+include("isothermal_bdry_kernels.jl")
     
 function gpu_update_sol_kernel(solution, global_vector, dt, fv_dofs_partition, values_per_dof, components, variable1_values)
     @inbounds begin
@@ -330,9 +236,6 @@ function generated_solve_function_for_I(var::Vector{Variable{FT}}, mesh::Grid, r
         index_ranges = CuArray(tmp_index_ranges)
 
         # ====================== bdry alloc ===========================
-        nfaces = length(mesh.bdryface[1])
-
-        total_iters = nbids * nfaces * num_direction_indices * num_band_indices
         bdryface_gpu = CUDA.zeros(Int, nfaces, nbids)
         for bi = 1:nbids
             bdryface_gpu[:, bi] = CuArray(mesh.bdryface[bi])
@@ -418,23 +321,55 @@ function generated_solve_function_for_I(var::Vector{Variable{FT}}, mesh::Grid, r
                     dofs_global, faces_per_element, index_ranges)
 
 
-                # Asynchronously compute boundary values on cpu
-                # @timeit timer_output "bdry_vals" begin
-                #     CUDA.@sync @cuda threads = nthreads blocks = Int(cld(total_iters, nthreads)) gpu_bdry_vals_kernel(nbids, nfaces, num_direction_indices, num_band_indices,
-                #         bdryface_gpu, mesh_face2element_gpu, mesh_bids_gpu, geometric_factors_volume_gpu,
-                #         geometric_factors_area_gpu, index_values_gpu, dofs_per_node,
-                #         fv_info_faceCenters_gpu, dim_faceCenters, facex_gpu, dim_cellCenters,
-                #         t, variables_1_values_gpu, coefficients_3_value_gpu, coefficients_1_value_gpu, coefficients_2_value_gpu, mesh_facenormals_gpu,
-                #         center_freq_gpu, polarizations_gpu, delta_freq_gpu, g20xi_gpu, g20wi_gpu, boundary_flux_gpu, boundary_dof_index_gpu, global_vector_gpu)
-                # end # timer bdry_vals
+                # Compute boundary values on GPU
                 @timeit timer_output "bdry_vals" begin
-                    CUDA.@sync @cuda threads = nthreads blocks = Int(cld(total_iters, nthreads)) gpu_bdry_vals_kernel(
-                    variables_1_values_gpu, coefficients_3_value_gpu, coefficients_1_value_gpu, coefficients_2_value_gpu,
-                    center_freq_gpu, polarizations_gpu, delta_freq_gpu, g20xi_gpu, g20wi_gpu, num_band_indices,
-                    num_direction_indices, mesh_facenormals_gpu, nbids, nfaces, bdryface_gpu, mesh_face2element_gpu,
-                    mesh_bids_gpu, geometric_factors_volume_gpu, geometric_factors_area_gpu, dofs_per_node,
-                    fv_info_faceCenters_gpu, dim_faceCenters, facex_gpu, t, boundary_flux_gpu, boundary_dof_index_gpu,
-                    global_vector_gpu)
+                    # CUDA.@sync @cuda threads = nthreads blocks = Int(cld(total_iters, nthreads)) gpu_bdry_vals_kernel(
+                    # variables_1_values_gpu, coefficients_3_value_gpu, coefficients_1_value_gpu, coefficients_2_value_gpu,
+                    # center_freq_gpu, polarizations_gpu, delta_freq_gpu, g20xi_gpu, g20wi_gpu, num_band_indices,
+                    # num_direction_indices, mesh_facenormals_gpu, nbids, nfaces, bdryface_gpu, mesh_face2element_gpu,
+                    # mesh_bids_gpu, geometric_factors_volume_gpu, geometric_factors_area_gpu, dofs_per_node,
+                    # fv_info_faceCenters_gpu, dim_faceCenters, facex_gpu, t, boundary_flux_gpu, boundary_dof_index_gpu,
+                    # global_vector_gpu)
+
+                    nfaces = length(mesh.bdryface[1])
+                    total_iters = nfaces * num_direction_indices * num_band_indices
+                    CUDA.@sync @cuda threads = nthreads blocks = Int(cld(total_iters, nthreads))
+                    isothermal_bdry_bi_1_gpu(variables_1_values_gpu, coefficients_3_value_gpu, coefficients_1_value_gpu,
+                    coefficients_2_value_gpu, center_freq_gpu, polarizations_gpu, delta_freq_gpu, g20xi_gpu, g20wi_gpu,
+                    num_band_indices, num_direction_indices, mesh_facenormals_gpu, nfaces, bdryface_gpu,
+                    mesh_face2element_gpu, mesh_bids_gpu, geometric_factors_volume_gpu, geometric_factors_area_gpu,
+                    dofs_per_node, fv_info_faceCenters_gpu, dim_faceCenters, facex_gpu, t, boundary_flux_gpu,
+                    boundary_dof_index_gpu, global_vector_gpu)
+
+                    nfaces = length(mesh.bdryface[2])
+                    total_iters = nfaces * num_direction_indices * num_band_indices
+                    CUDA.@sync @cuda threads = nthreads blocks = Int(cld(total_iters, nthreads))
+                    isothermal_bdry_bi_2_gpu(variables_1_values_gpu, coefficients_3_value_gpu, coefficients_1_value_gpu,
+                    coefficients_2_value_gpu, center_freq_gpu, polarizations_gpu, delta_freq_gpu, g20xi_gpu, g20wi_gpu,
+                    num_band_indices, num_direction_indices, mesh_facenormals_gpu, nfaces, bdryface_gpu,
+                    mesh_face2element_gpu, mesh_bids_gpu, geometric_factors_volume_gpu, geometric_factors_area_gpu,
+                    dofs_per_node, fv_info_faceCenters_gpu, dim_faceCenters, facex_gpu, t, boundary_flux_gpu,
+                    boundary_dof_index_gpu, global_vector_gpu)
+
+                    nfaces = length(mesh.bdryface[3])
+                    total_iters = nfaces * num_direction_indices * num_band_indices
+                    CUDA.@sync @cuda threads = nthreads blocks = Int(cld(total_iters, nthreads))
+                    isothermal_bdry_bi_3_gpu(variables_1_values_gpu, coefficients_3_value_gpu, coefficients_1_value_gpu,
+                    coefficients_2_value_gpu, center_freq_gpu, polarizations_gpu, delta_freq_gpu, g20xi_gpu, g20wi_gpu,
+                    num_band_indices, num_direction_indices, mesh_facenormals_gpu, nfaces, bdryface_gpu,
+                    mesh_face2element_gpu, mesh_bids_gpu, geometric_factors_volume_gpu, geometric_factors_area_gpu,
+                    dofs_per_node, fv_info_faceCenters_gpu, dim_faceCenters, facex_gpu, t, boundary_flux_gpu,
+                    boundary_dof_index_gpu, global_vector_gpu)
+
+                    nfaces = length(mesh.bdryface[4])
+                    total_iters = nfaces * num_direction_indices * num_band_indices
+                    CUDA.@sync @cuda threads = nthreads blocks = Int(cld(total_iters, nthreads))
+                    isothermal_bdry_bi_4_gpu(variables_1_values_gpu, coefficients_3_value_gpu, coefficients_1_value_gpu,
+                    coefficients_2_value_gpu, center_freq_gpu, polarizations_gpu, delta_freq_gpu, g20xi_gpu, g20wi_gpu,
+                    num_band_indices, num_direction_indices, mesh_facenormals_gpu, nfaces, bdryface_gpu,
+                    mesh_face2element_gpu, mesh_bids_gpu, geometric_factors_volume_gpu, geometric_factors_area_gpu,
+                    dofs_per_node, fv_info_faceCenters_gpu, dim_faceCenters, facex_gpu, t, boundary_flux_gpu,
+                    boundary_dof_index_gpu, global_vector_gpu)
                 end # timer bdry_vals
 
             end # timer:step_assembly

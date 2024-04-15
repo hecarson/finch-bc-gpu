@@ -1,5 +1,4 @@
 using CUDA
-using BenchmarkTools
 println("modules loaded")
 
 function f_cuda(a_max, b_max, res)
@@ -23,7 +22,7 @@ num_blocks = ceil(Int, a_max * b_max / num_threads)
 println("compiling kernel")
 kernel = @cuda launch=false f_cuda(a_max, b_max, res_d)
 println("launching kernel")
-@btime @sync kernel(threads=num_threads, blocks=num_blocks, a_max, b_max, res_d)
+@sync kernel(threads=num_threads, blocks=num_blocks, a_max, b_max, res_d)
 
 # res = Array{Int}(undef, a_max * b_max)
 # res = copyto!(res, res_d)

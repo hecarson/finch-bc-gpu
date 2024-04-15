@@ -73,7 +73,9 @@ function gpu_assembly_kernel(mesh_elemental_order_gpu, geometric_factors_volume_
             #= Compute flux terms (surface integral) =#
             flux_tmp_gpu = (-((((1.0 * FACENORMAL1_1_gpu) > 0)) ? ((1.0 * value_CELL1_u_1_gpu * FACENORMAL1_1_gpu)) : ((1.0 * value_CELL2_u_1_gpu * FACENORMAL1_1_gpu))))
             # boundary conditions handled on cpu side
-            flux_tmp_gpu = (fbid_gpu==1 || fbid_gpu==2) ? 0.0 : flux_tmp_gpu
+            # flux_tmp_gpu = (fbid_gpu==1 || fbid_gpu==2) ? 0.0 : flux_tmp_gpu
+            # FIX
+            flux_tmp_gpu = (fbid_gpu==1) ? 0.0 : flux_tmp_gpu
             
             flux_gpu = (flux_gpu + (flux_tmp_gpu * area_over_volume))
         end

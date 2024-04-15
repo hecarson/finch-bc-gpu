@@ -34,18 +34,19 @@ u = variable("u", location=CELL)
 # w = variable("w", location=CELL)
 
 @callbackFunction(
-    function bc_f(t)
+    function bc1_f(t)
         return t<0.2 ? sin(pi*t/0.2)^2 : 0
     end
 )
 
 # left boundary
-boundary(u, 1, FLUX, "bc_f(t)")
+boundary(u, 1, FLUX, "bc1_f(t)")
 # boundary(v, 1, DIRICHLET, "bc_f(t)")
 # boundary(w, 1, DIRICHLET, 1)
 
 # right boundary
 boundary(u, 2, NO_BC)
+# boundary(u, 2, FLUX, "bc2_f()")
 # boundary(v, 2, NO_BC)
 # boundary(w, 2, DIRICHLET, 0)
 
@@ -66,11 +67,11 @@ coefficient("a", 1)
 conservationForm(u, "surface(upwind(a,u))") 
 
 # exportCode("fvad1dgpucode") # uncomment to export generated code to a file
-importCode("finch-gpu-test/fvad1dgpucode")
+importCode("finch-gpu-test/fvad1dgpucode-fix")
 
 # solve([u,v,w])
 solve(u)
-out_file = open("fvad1dgpu-sol.txt", "w")
+out_file = open("fvad1d-u-gpu-sol.txt", "w")
 println(out_file, "u: $(u.values)")
 # println(out_file, "v: $(v.values)")
 # println(out_file, "w: $(w.values)")

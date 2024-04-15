@@ -8,8 +8,9 @@ add_finch_code: Whether Finch code should be added
 bc_expr_args: Mapping from parameter names to expressions
 finch_variables: Parameters that are Finch variables
 """
-function gen_bc_cuda(input_code::String; index_vars::Vector{String} = [], add_finch_code = true, bi::Int = 0,
-bc_expr_args::Dict{String, String} = Dict{String, String}(), finch_variables::Vector{String} = Vector{String}())::String
+function gen_bc_cuda(input_code::String; index_vars::Vector{String} = Vector{String}(), add_finch_code::Bool = true,
+bi::Int = 0, bc_expr_args::Dict{String, String} = Dict{String, String}(),
+finch_variables::Vector{String} = Vector{String}())::String
     func_expr = Meta.parse(input_code)
     Base.remove_linenums!(func_expr)
     code_buffer = IOBuffer()
@@ -137,7 +138,7 @@ end
 
 function gen_bc_body_finch(code_buffer::IOBuffer, func_expr::Expr, bc_index_vars::Vector{String},
 bc_expr_args::Dict{String, String}, finch_variables::Vector{String})
-    println(code_buffer, "fid = mesh_bdryface[fi,bi]")
+    println(code_buffer, "fid = mesh_bdryface[fi]")
     println(code_buffer, "eid = mesh_face2element[1,fid]");
     println(code_buffer, "fbid = mesh_bids[bi]");
     println(code_buffer, "volume = geometric_factors_volume[eid]");
@@ -157,7 +158,9 @@ bc_expr_args::Dict{String, String}, finch_variables::Vector{String})
         push!(index_offset_parts, "($(bc_index_vars[i]) - 1) * ($(index_offset_per_index))")
     end
     index_offset = join(index_offset_parts, " + ")
-    println(code_buffer, "index_offset = $(index_offset)")
+    if index_offset != ""
+        println(code_buffer, "index_offset = $(index_offset)")
+    end
 
     # Row index
     println(code_buffer, "row_index = index_offset + 1 + dofs_per_node * (eid - 1)")

@@ -93,23 +93,7 @@ function gpu_assembly_kernel(mesh_elemental_order_gpu, geometric_factors_volume_
     return nothing;
 end # GPU kernel
 
-include("ad_bdry_kernels.jl")
 
-function gpu_update_sol_kernel(solution, global_vector, dt, fv_dofs_partition, values_per_dof, components, variable1_values)
-    @inbounds begin
-        block_id = blockIdx().x
-        thread_id = threadIdx().x + (block_id - 1) * blockDim().x
-        if thread_id < fv_dofs_partition
-            solution[thread_id] = solution[thread_id] + (dt * global_vector[thread_id])
-            if thread_id < values_per_dof * components
-                dofi = (thread_id - 1) ÷ components
-                compi = thread_id - (dofi - 1) * components
-                variable1_values[compi, dofi] = solution[thread_id]
-            end
-        end
-    end
-    return nothing
-end
 
 # begin solve function for u
 
@@ -209,17 +193,6 @@ function generated_solve_function_for_u(var::Vector{Variable{FT}}, mesh::Grid, r
         global_vector_gpu = CuArray(global_vector);
         
         index_ranges = CuArray(tmp_index_ranges);
-
-        # bdry alloc
-        bdryface_bi_1_gpu = CuArray(mesh.bdryface[1])
-        mesh_bids_gpu = CuArray(mesh.bids)
-        fv_info_faceCenters_gpu = CuArray(fv_info.faceCenters)
-        dim_faceCenters = size(fv_info.faceCenters, 1)
-        max_nfaces = maximum([length(mesh.bdryface[bi]) for bi=1:nbids])
-        max_total_iters = max_nfaces
-        facex_gpu = CUDA.zeros(max_total_iters, dim_faceCenters)
-        boundary_flux_gpu = CUDA.zeros(Float64, num_bdry_faces * dofs_per_node)
-        boundary_dof_index_gpu = CUDA.zeros(Int64, num_bdry_faces * dofs_per_node)
     end
 
     #= No parent-child mesh needed =#
@@ -230,16 +203,6 @@ function generated_solve_function_for_u(var::Vector{Variable{FT}}, mesh::Grid, r
     solution = get_var_vals(var, solution, );
     t = 0.0
     dt = time_stepper.dt
-
-    # Extra addition
-    nthreads = CUDA.attribute(device(), CUDA.DEVICE_ATTRIBUTE_MAX_THREADS_PER_BLOCK)
-    # nthreads = 2
-    solution_gpu = CuArray(solution)
-    Mem.pin(variables[1].values)
-    Mem.pin(solution)
-    values_per_dof = size(var[1].values, 2)
-    totalcomponents = var[1].total_components
-
     #= ############################################### =#
     #= Time stepping loop =#
     @timeit timer_output "time_steps" begin
@@ -262,7 +225,7 @@ function generated_solve_function_for_u(var::Vector{Variable{FT}}, mesh::Grid, r
                 
                 
                 # Send needed values back to gpu
-                # copyto!(variables_1_values_gpu, variables[1].values); # CHANGED
+                copyto!(variables_1_values_gpu, variables[1].values);
                 CUDA.synchronize();
                 
                 
@@ -274,29 +237,65 @@ function generated_solve_function_for_u(var::Vector{Variable{FT}}, mesh::Grid, r
                 
                 # Asynchronously compute boundary values on cpu
                 @timeit timer_output "bdry_vals" begin
-                    nfaces = length(mesh.bdryface[1])
-                    total_iters = nfaces
-                    CUDA.@sync @cuda threads = nthreads blocks = Int(cld(total_iters, nthreads)) ad_bc_bi_1_gpu(
-                    t, nfaces, bdryface_bi_1_gpu, mesh_face2element_gpu, mesh_bids_gpu, geometric_factors_volume_gpu,
-                    geometric_factors_area_gpu, dofs_per_node, fv_info_faceCenters_gpu, dim_faceCenters, facex_gpu,
-                    boundary_flux_gpu, boundary_dof_index_gpu, global_vector_gpu)
+                    next_bdry_index = 1;
+                    for bi=1:nbids
+                        nfaces = length(mesh.bdryface[bi]);
+                        for fi=1:nfaces
+                            fid = mesh.bdryface[bi][fi];
+                            eid = mesh.face2element[1,fid];
+                            fbid = mesh.bids[bi];
+                            volume = geometric_factors.volume[eid]
+                            area = geometric_factors.area[fid]
+                            area_over_volume = (area / volume)
+                            
+                            
+                            
+                            index_offset = 0
+                            
+                            row_index = index_offset + 1 + dofs_per_node * (eid - 1);
+                            
+                            apply_boundary_conditions_face_rhs(var, eid, fid, fbid, mesh, refel, geometric_factors, fv_info, prob, 
+                                                                t, dt, flux_tmp, bdry_done, index_offset, index_values)
+                            #
+                            # store it
+                            boundary_flux[next_bdry_index] = flux_tmp[1] * area_over_volume;
+                            boundary_dof_index[next_bdry_index] = row_index;
+                            next_bdry_index += 1;
+                            
+                        end
+
+                    end
 
                 end # timer bdry_vals
 
+                
+                # Then get global_vector from gpu
+                CUDA.synchronize()
+                copyto!(global_vector, global_vector_gpu)
+                CUDA.synchronize()
+                
+                # And add BCs to global vector
+                for update_i = 1:(num_bdry_faces * dofs_per_node)
+                    row_index = boundary_dof_index[update_i]
+                    global_vector[row_index] = global_vector[row_index] + boundary_flux[update_i];
+                end
+
+                
+                
             end # timer:step_assembly
 
             
             @timeit timer_output "update_sol" begin
-                CUDA.@sync @cuda threads = nthreads blocks = Int(cld(fv_dofs_partition, nthreads)) gpu_update_sol_kernel(solution_gpu, global_vector_gpu, dt, fv_dofs_partition, values_per_dof, totalcomponents, variables_1_values_gpu)
-                # copyto!(solution, solution_gpu)
+                for update_i = 1:fv_dofs_partition
+                    solution[update_i] = (solution[update_i] + (dt * global_vector[update_i]))
+                end
+
+                
             end # timer:update_sol
 
             
-            # copy_bdry_vals_to_vector(var, solution, mesh, dofs_per_node, prob);
-            # place_vector_in_vars(var, solution);
-
-            copyto!(var[1].values, variables_1_values_gpu)
-
+            copy_bdry_vals_to_vector(var, solution, mesh, dofs_per_node, prob);
+            place_vector_in_vars(var, solution);
             #= No post-step function specified =#
             t = (t + dt)
             if ((100.0 * (ti / time_stepper.Nsteps)) >= (last_major_progress + 10))

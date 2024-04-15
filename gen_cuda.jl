@@ -71,7 +71,10 @@ add_finch_code::Bool, bi::Int, bc_expr_args::Dict{String, String})
     if add_finch_code
         push!(kernel_params, "max_fi")
         push!(kernel_params, "mesh_bdryface", "mesh_face2element", "mesh_bids", "geometric_factors_volume",
-        "geometric_factors_area", "dofs_per_node", "faceCenters", "dim_faceCenters", "facex", "t")
+        "geometric_factors_area", "dofs_per_node", "faceCenters", "dim_faceCenters", "facex")
+        if "t" ∉ kernel_params
+            push!(kernel_params, "t")
+        end
         push!(kernel_params, "boundary_flux", "boundary_dof_index", "global_vector")
     else
         push!(kernel_params, "result_vector")
@@ -163,7 +166,11 @@ bc_expr_args::Dict{String, String}, finch_variables::Vector{String})
     end
 
     # Row index
-    println(code_buffer, "row_index = index_offset + 1 + dofs_per_node * (eid - 1)")
+    if index_offset != ""
+        println(code_buffer, "row_index = index_offset + 1 + dofs_per_node * (eid - 1)")
+    else
+        println(code_buffer, "row_index = 1 + dofs_per_node * (eid - 1)")
+    end
 
     # Finch-provided BC function args
     println(code_buffer, "for i in 1:dim_faceCenters")

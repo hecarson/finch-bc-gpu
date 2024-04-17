@@ -1,5 +1,4 @@
 using CUDA
-using BenchmarkTools
 println("modules loaded")
 
 function f_cuda(a_d, b_d)
@@ -20,4 +19,4 @@ println("compiling kernel")
 kernel = @cuda launch=false f_cuda(a_d, b_d)
 println("launching kernel")
 CUDA.@profile kernel(blocks=num_blocks, threads=num_threads, a_d, b_d)
-println(a_d)
+# println(a_d)

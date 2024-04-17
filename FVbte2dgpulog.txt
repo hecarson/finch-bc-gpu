@@ -10,21 +10,21 @@
 6.	Added callback function: symmetric_bdry_3d
 7.	Set time stepper to Euler-explicit
 8.	Set time stepper values to dt=1.0e-12, Nsteps=2
-9.	Building simple quad mesh with nx*nx elements, nx=[5, 5]
+9.	Building simple quad mesh with nx*nx elements, nx=[20, 20]
 10.	Building full grid from mesh data. Types = FV
 11.	Building reference element: 2D, order=1, nfaces=4
-12.	Initial node setup: 0.5077509880065918
-13.	Remove duplicate nodes: 1.0937860012054443
-14.	Vertex, face, bdry setup: 0.19580698013305664
-15.	Remove duplicate bdry nodes: 0.028929948806762695
-16.	Total grid building time: 11.784341096878052
-17.	Added mesh with 36 vertices and 25 elements.
-18.	Full grid has 36 nodes.
-19.	Added boundary ID: 2 including [6, 0] nodes, [5, 0] faces.
-20.	Added boundary ID: 3 including [4, 0, 0] nodes, [5, 0, 0] faces.
-21.	Added boundary ID: 4 including [4, 0, 0, 0] nodes, [5, 0, 0, 0] faces.
-22.	Added indexer direction : [1, ... 4]
-23.	Added indexer band : [1, ... 13]
+12.	Initial node setup: 0.5117800235748291
+13.	Remove duplicate nodes: 1.0797030925750732
+14.	Vertex, face, bdry setup: 0.2075209617614746
+15.	Remove duplicate bdry nodes: 0.028847217559814453
+16.	Total grid building time: 11.512902021408081
+17.	Added mesh with 441 vertices and 400 elements.
+18.	Full grid has 441 nodes.
+19.	Added boundary ID: 2 including [21, 0] nodes, [20, 0] faces.
+20.	Added boundary ID: 3 including [19, 0, 0] nodes, [20, 0, 0] faces.
+21.	Added boundary ID: 4 including [19, 0, 0, 0] nodes, [20, 0, 0, 0] faces.
+22.	Added indexer direction : [1, ... 16]
+23.	Added indexer band : [1, ... 55]
 24.	Added variable: I of type: var array, location: cell
 25.	Added variable: Io of type: var array, location: cell
 26.	Added variable: beta of type: var array, location: cell
@@ -32,12 +32,12 @@
 28.	Added variable: temperatureLast of type: scalar, location: cell
 29.	Added variable: G_last of type: var array, location: cell
 30.	Added variable: G_next of type: var array, location: cell
-31.	Added coefficient Sx : [1.5707963267948963, 1.5707963267948968, -1.5707963267948963, -1.570796326794897]
-32.	Added coefficient Sy : [1.5707963267948968, -1.5707963267948963, -1.570796326794897, 1.5707963267948961]
-33.	Added coefficient vg : [4781.644791395849, 3726.470278057932, 2215.6341203852385, 8786.793182645577, 8322.439744675856, 7830.598455605667, 7391.356846685181, 7014.6029745152655, 6616.430589458105, 6192.709633121469, 5737.782799583299, 5243.53414313595, 4697.568431142965]
-34.	Added coefficient center_freq : [4.965456956766533e12, 1.48963708702996e13, 2.4827284783832664e13, 4.965456956766533e12, 1.48963708702996e13, 2.4827284783832664e13, 3.3184929956200125e13, 3.9969306387401984e13, 4.675368281860384e13, 5.35380592498057e13, 6.032243568100756e13, 6.710681211220942e13, 7.389118854341128e13]
-35.	Added coefficient delta_freq : [9.930913913533066e12, 9.930913913533066e12, 9.930913913533066e12, 9.930913913533066e12, 9.930913913533066e12, 9.930913913533066e12, 6.784376431201859e12, 6.784376431201859e12, 6.784376431201859e12, 6.784376431201859e12, 6.784376431201859e12, 6.784376431201859e12, 6.784376431201859e12]
-36.	Added coefficient polarizations : [0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+31.	Added coefficient Sx : [0.11956975072518107, 0.34050584153012387, 0.5096030046552452, 0.6011177298843462, 0.6011177298843462, 0.5096030046552452, 0.34050584153012387, 0.11956975072518129, -0.11956975072518114, -0.3405058415301237, -0.5096030046552452, -0.6011177298843461, -0.6011177298843462, -0.5096030046552451, -0.34050584153012387, -0.11956975072518136]
+32.	Added coefficient Sy : [0.6011177298843462, 0.5096030046552452, 0.3405058415301239, 0.11956975072518113, -0.11956975072518104, -0.3405058415301237, -0.5096030046552452, -0.6011177298843462, -0.6011177298843462, -0.5096030046552453, -0.34050584153012387, -0.11956975072518133, 0.11956975072518111, 0.34050584153012414, 0.5096030046552452, 0.6011177298843461]
+33.	Added coefficient vg : [5143.456559767625, 4965.846971730989, 4781.644791395849, 4590.056391322037, 4390.114854983807, 4180.621868141475, 3960.0618642662566, 3726.470278057932, 3477.22180737473, 3208.6698586977755, 2915.4850413865656, 2589.313382150188, 2215.6341203852376, 1764.5184385119044, 1148.0488161579667, 8965.80319251529, 8876.749442265003, 8786.793182645577, 8695.906405224327, 8604.059622193246, 8511.221754606733, 8417.360009523509, 8322.439744675856, 8226.424319082686, 8129.274927779828, 8030.950418553489, 7931.407088222061, 7830.598455605667, 7728.475007837483, 7624.98391608817, 7522.370400826194, 7420.670867693622, 7317.558049380107, 7212.971335410836, 7106.845655061686, 6999.111003854699, 6889.691903393847, 6778.506782699381, 6665.467266629721, 6550.477353744769, 6433.432461861541, 6314.218314308164, 6192.709633121467, 6068.768596640195, 5942.243007398551, 5812.964100903064, 5680.743905317202, 5545.37203415689, 5406.611755676572, 5264.19512898514, 5117.816920860072, 4967.126907463957, 4811.720003726655, 4651.12342060217, 4484.779677206542]
+34.	Added coefficient center_freq : [9.930913913533066e11, 2.97927417405992e12, 4.965456956766533e12, 6.951639739473146e12, 8.93782252217976e12, 1.0924005304886373e13, 1.2910188087592986e13, 1.48963708702996e13, 1.6882553653006213e13, 1.886873643571283e13, 2.085491921841944e13, 2.2841102001126055e13, 2.4827284783832668e13, 2.681346756653928e13, 2.8799650349245895e13, 9.930913913533066e11, 2.97927417405992e12, 4.965456956766533e12, 6.951639739473146e12, 8.93782252217976e12, 1.0924005304886373e13, 1.2910188087592986e13, 1.48963708702996e13, 1.6882553653006213e13, 1.886873643571283e13, 2.085491921841944e13, 2.2841102001126055e13, 2.4827284783832668e13, 2.681346756653928e13, 2.8799650349245895e13, 3.074255444096746e13, 3.264217984170398e13, 3.45418052424405e13, 3.644143064317702e13, 3.834105604391355e13, 4.024068144465007e13, 4.214030684538659e13, 4.403993224612312e13, 4.593955764685964e13, 4.7839183047596164e13, 4.973880844833269e13, 5.163843384906921e13, 5.3538059249805734e13, 5.543768465054226e13, 5.733731005127878e13, 5.9236935452015305e13, 6.113656085275183e13, 6.303618625348835e13, 6.4935811654224875e13, 6.68354370549614e13, 6.873506245569792e13, 7.063468785643444e13, 7.253431325717095e13, 7.443393865790747e13, 7.633356405864398e13]
+35.	Added coefficient delta_freq : [1.9861827827066133e12, 1.9861827827066133e12, 1.9861827827066133e12, 1.9861827827066133e12, 1.9861827827066133e12, 1.9861827827066133e12, 1.9861827827066133e12, 1.9861827827066133e12, 1.9861827827066133e12, 1.9861827827066133e12, 1.9861827827066133e12, 1.9861827827066133e12, 1.9861827827066133e12, 1.9861827827066133e12, 1.9861827827066133e12, 1.9861827827066133e12, 1.9861827827066133e12, 1.9861827827066133e12, 1.9861827827066133e12, 1.9861827827066133e12, 1.9861827827066133e12, 1.9861827827066133e12, 1.9861827827066133e12, 1.9861827827066133e12, 1.9861827827066133e12, 1.9861827827066133e12, 1.9861827827066133e12, 1.9861827827066133e12, 1.9861827827066133e12, 1.9861827827066133e12, 1.8996254007365205e12, 1.8996254007365205e12, 1.8996254007365205e12, 1.8996254007365205e12, 1.8996254007365205e12, 1.8996254007365205e12, 1.8996254007365205e12, 1.8996254007365205e12, 1.8996254007365205e12, 1.8996254007365205e12, 1.8996254007365205e12, 1.8996254007365205e12, 1.8996254007365205e12, 1.8996254007365205e12, 1.8996254007365205e12, 1.8996254007365205e12, 1.8996254007365205e12, 1.8996254007365205e12, 1.8996254007365205e12, 1.8996254007365205e12, 1.8996254007365205e12, 1.8996254007365205e12, 1.8996254007365205e12, 1.8996254007365205e12, 1.8996254007365205e12]
+36.	Added coefficient polarizations : [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
 37.	Generated function: genfunction_1
 38.	Boundary condition: var=I bid=1 type=flux val=genfunction_1
 39.	Generated function: genfunction_2
@@ -46,9 +46,9 @@
 42.	Boundary condition: var=I bid=3 type=flux val=genfunction_3
 43.	Generated function: genfunction_4
 44.	Boundary condition: var=I bid=4 type=flux val=genfunction_4
-45.	Initial condition for I : Union{Float64, GenFunction}[4.1534197776378864e8, 4.1534197776378864e8, 4.1534197776378864e8, 4.1534197776378864e8, 3.1949842222535114e9, 3.1949842222535114e9] (truncated for printing)
-46.	Initial condition for Io : Union{Float64, GenFunction}[4.1534197776378864e8, 3.1949842222535114e9, 1.1566448536368053e10, 6.33386021116602e7, 4.143745312152298e8, 1.0422956039130894e9] (truncated for printing)
-47.	Initial condition for beta : Union{Float64, GenFunction}[3.7404787255322296e10, 1.1221436176596689e11, 1.920459066854423e11, 1.3314111906330626e9, 1.1982700715697563e10, 3.328527976582656e10] (truncated for printing)
+45.	Initial condition for I : Union{Float64, GenFunction}[3.2082860359276813e6, 3.2082860359276813e6, 3.2082860359276813e6, 3.2082860359276813e6, 3.2082860359276813e6, 3.2082860359276813e6] (truncated for printing)
+46.	Initial condition for Io : Union{Float64, GenFunction}[3.2082860359276813e6, 2.2639132020991556e7, 6.2096206585798845e7, 1.2245981055965827e8, 2.0493854256141263e8, 3.1118438937369394e8] (truncated for printing)
+47.	Initial condition for beta : Union{Float64, GenFunction}[7.48095745106446e9, 2.244287235319338e10, 3.7404787255322296e10, 5.236670215745122e10, 6.732861705958014e10, 8.229053196170906e10] (truncated for printing)
 48.	Initial condition for temperature : Union{Float64, GenFunction}[300.0]
 49.	Initial condition for temperatureLast : Union{Float64, GenFunction}[300.0]
 50.	Built initial conditions for: I
@@ -198,9 +198,9 @@
                │  └─ block:assembly loop
                │     └─ Loop{ei=1, num_elements}
                │        └─ block:
-               │           └─ Loop{INDEX_VAL_band=1, 13}
+               │           └─ Loop{INDEX_VAL_band=1, 55}
                │              └─ block:
-               │                 └─ Loop{INDEX_VAL_direction=1, 4}
+               │                 └─ Loop{INDEX_VAL_direction=1, 16}
                │                    └─ block:assembly
                │                       ├─ =
                │                       │  ├─ eid
@@ -221,7 +221,7 @@
                │                       │     ├─ +
                │                       │     │  ├─ INDEX_VAL_direction
                │                       │     │  └─ *
-               │                       │     │     ├─ 4
+               │                       │     │     ├─ 16
                │                       │     │     └─ -
                │                       │     │        ├─ INDEX_VAL_band
                │                       │     │        └─ 1
@@ -254,7 +254,7 @@
                │                       │  │  │  ├─ value__I_directionband
                │                       │  │  │  └─ KNOWN_VAR
                │                       │  │  │     ├─ 1
-               │                       │  │  │     ├─ "(INDEX_VAL_direction + (4*(INDEX_VAL_band-1)))"
+               │                       │  │  │     ├─ "(INDEX_VAL_direction + (16*(INDEX_VAL_band-1)))"
                │                       │  │  │     └─ eid
                │                       │  │  └─ =
                │                       │  │     ├─ volume
@@ -427,13 +427,13 @@
                │                       │        │  │  ├─ value_CELL1_I_directionband
                │                       │        │  │  └─ KNOWN_VAR
                │                       │        │  │     ├─ 1
-               │                       │        │  │     ├─ "(INDEX_VAL_direction + (4*(INDEX_VAL_band-1)))"
+               │                       │        │  │     ├─ "(INDEX_VAL_direction + (16*(INDEX_VAL_band-1)))"
                │                       │        │  │     └─ eid
                │                       │        │  ├─ =
                │                       │        │  │  ├─ value_CELL2_I_directionband
                │                       │        │  │  └─ KNOWN_VAR
                │                       │        │  │     ├─ 1
-               │                       │        │  │     ├─ "(INDEX_VAL_direction + (4*(INDEX_VAL_band-1)))"
+               │                       │        │  │     ├─ "(INDEX_VAL_direction + (16*(INDEX_VAL_band-1)))"
                │                       │        │  │     └─ neighbor
                │                       │        │  ├─ =
                │                       │        │  │  ├─ area
@@ -600,13 +600,13 @@ function generated_solve_function_for_I(var::Vector{Variable{FT}}, mesh::Grid, r
     post_step_function = prob.post_step_function;
     
     num_elements = mesh.nel_owned;
-    num_band_indices = 13;
-    num_direction_indices = 4;
+    num_band_indices = 55;
+    num_direction_indices = 16;
     tmp_index_ranges = [num_elements, num_band_indices, num_direction_indices, ];
     
     
     # Prepare some useful numbers
-    # dofs_per_node = 52;
+    # dofs_per_node = 880;
     # dofs_per_loop = 1;
     # dof_offsets = [0];
     
@@ -855,32 +855,33 @@ end # function
 94.	While importing, nothing was found for G_last
 95.	While importing, no solve function was found for G_next
 96.	While importing, nothing was found for G_next
-97.	Imported code from finch-gpu-test/bte2dgpucode-gpu-newkernel.jl
-98.	Set time stepper values to dt=1.0e-12, Nsteps=100
+97.	Imported code from finch-gpu/bte2dgpucode-gpu-newkernel.jl
+98.	Set time stepper values to dt=1.0e-12, Nsteps=100000
 99.	Solved for [I]
-100.	Closed generated code files.
-101.	 ────────────────────────────────────────────────────────────────────────────────
+100.	Writing values to file: bte2dTemp.vtu
+101.	Closed generated code files.
+102.	 ────────────────────────────────────────────────────────────────────────────────
                                         Time                    Allocations      
                                ───────────────────────   ────────────────────────
-       Tot / % measured:            84.2s /  73.8%           4.97GiB /  37.9%    
+       Tot / % measured:            3361s /  99.3%           7.41GiB /  54.3%    
 
  Section               ncalls     time    %tot     avg     alloc    %tot      avg
  ────────────────────────────────────────────────────────────────────────────────
- Mesh                       1    25.5s   41.1%   25.5s    518MiB   26.9%   518MiB
-   mesh2grid                1    11.8s   19.0%   11.8s    269MiB   14.0%   269MiB
-   bids                     1    1.03s    1.7%   1.03s   67.6MiB    3.5%  67.6MiB
-   geo factors              1    571ms    0.9%   571ms   19.0MiB    1.0%  19.0MiB
-     fv_info                1   99.2ms    0.2%  99.2ms   4.15MiB    0.2%  4.15MiB
-   gen/read                 1    464ms    0.7%   464ms   8.71MiB    0.5%  8.71MiB
- CodeGen                    1    19.7s   31.6%   19.7s    511MiB   26.6%   511MiB
- Solve                      1    16.9s   27.3%   16.9s    896MiB   46.5%   896MiB
-   FV_solve                 1    16.9s   27.2%   16.9s    896MiB   46.5%   896MiB
-     GPU alloc              1    7.04s   11.3%   7.04s    398MiB   20.7%   398MiB
-     time_steps             1    4.36s    7.0%   4.36s    210MiB   10.9%   210MiB
-       step_assembly      100    3.94s    6.3%  39.4ms    189MiB    9.8%  1.89MiB
-         bdry_vals        100    1.80s    2.9%  18.0ms   57.4MiB    3.0%   587KiB
-       update_sol         100    136ms    0.2%  1.36ms   4.56MiB    0.2%  46.7KiB
-     allocate               1   8.03μs    0.0%  8.03μs   31.8KiB    0.0%  31.8KiB
+ Solve                      1    3292s   98.7%   3292s   3.00GiB   74.6%  3.00GiB
+   FV_solve                 1    3292s   98.7%   3292s   3.00GiB   74.6%  3.00GiB
+     time_steps             1    3280s   98.3%   3280s   2.32GiB   57.8%  2.32GiB
+       step_assembly     100k    39.8s    1.2%   398μs   2.26GiB   56.1%  23.7KiB
+         bdry_vals       100k    23.7s    0.7%   237μs   1.77GiB   44.0%  18.6KiB
+       update_sol        100k    2.48s    0.1%  24.8μs   47.3MiB    1.1%     496B
+     GPU alloc              1    6.95s    0.2%   6.95s    398MiB    9.7%   398MiB
+     allocate               1    932μs    0.0%   932μs   8.06MiB    0.2%  8.06MiB
+ Mesh                       1    24.9s    0.7%   24.9s    534MiB   13.0%   534MiB
+   mesh2grid                1    11.6s    0.3%   11.6s    282MiB    6.8%   282MiB
+   bids                     1    976ms    0.0%   976ms   67.8MiB    1.6%  67.8MiB
+   geo factors              1    567ms    0.0%   567ms   21.1MiB    0.5%  21.1MiB
+     fv_info                1    103ms    0.0%   103ms   4.75MiB    0.1%  4.75MiB
+   gen/read                 1    452ms    0.0%   452ms   8.92MiB    0.2%  8.92MiB
+ CodeGen                    1    19.0s    0.6%   19.0s    511MiB   12.4%   511MiB
  ────────────────────────────────────────────────────────────────────────────────
 
-102.	Completed. Closing Log.
+103.	Completed. Closing Log.

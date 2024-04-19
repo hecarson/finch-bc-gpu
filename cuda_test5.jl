@@ -1,4 +1,5 @@
 using CUDA
+using NVTX
 println("modules loaded")
 
 function f_cuda(a_d, b_d)
@@ -18,5 +19,9 @@ num_blocks = 4
 println("compiling kernel")
 kernel = @cuda launch=false f_cuda(a_d, b_d)
 println("launching kernel")
-CUDA.@profile kernel(blocks=num_blocks, threads=num_threads, a_d, b_d)
+CUDA.@profile begin
+    NVTX.@mark "kernel launch"
+    kernel(blocks=num_blocks, threads=num_threads, a_d, b_d)
+    NVTX.@mark "kernel done"
+end
 # println(a_d)

@@ -3,55 +3,56 @@
 ######################################
 (verbosity = 3)
 1.	Set time stepper to Euler-explicit
-2.	Building simple line mesh with nx elements, nx=10
+2.	Building simple line mesh with nx elements, nx=100
 3.	Building full grid from mesh data. Types = FV
 4.	Building reference element: 1D, order=1, nfaces=2
-5.	Initial node setup: 0.33634495735168457
-6.	Remove duplicate nodes: 1.5629708766937256
-7.	Vertex, face, bdry setup: 0.28665995597839355
-8.	Remove duplicate bdry nodes: 0.04173898696899414
-9.	Total grid building time: 16.389189958572388
-10.	Added mesh with 11 vertices and 10 elements.
-11.	Full grid has 11 nodes.
+5.	Initial node setup: 0.2556648254394531
+6.	Remove duplicate nodes: 1.1030800342559814
+7.	Vertex, face, bdry setup: 0.20641088485717773
+8.	Remove duplicate bdry nodes: 0.029909133911132812
+9.	Total grid building time: 11.526671886444092
+10.	Added mesh with 101 vertices and 100 elements.
+11.	Full grid has 101 nodes.
 12.	Added variable: u of type: scalar, location: cell
 13.	Added callback function: bc1_f
 14.	Generated function: genfunction_1
 15.	Boundary condition: var=u bid=1 type=flux val=genfunction_1
 16.	Boundary condition: var=u bid=2 type=No BC val=0.0
-17.	Initial condition for u : Union{Float64, GenFunction}[0.0]
-18.	Added coefficient a : [1]
-19.	Making conservation form for variable(s): Any[:u]
-20.	Conservation form, input: ["surface(upwind(a,u))"]
-21.	SP expr = Any[:(surface(upwind(a, u)))]
-22.	SP insert parameters -> Any[:(surface(upwind(a, u)))]
-23.	SP replace symbols -> Any[:((finch_state.ops[5]).op((finch_state.ops[28]).op(SymEngine.Basic[1.0], SymEngine.Basic[_u_1])))]
-24.	SP handle callbacks -> Any[:((finch_state.ops[5]).op((finch_state.ops[28]).op(SymEngine.Basic[1.0], SymEngine.Basic[_u_1])))]
-25.	SP apply ops -> Any[SymEngine.Basic[conditional(isgreaterthan(1.0*_FACENORMAL1_1, 0), 1.0*CELL1__u_1*_FACENORMAL1_1, 1.0*CELL2__u_1*_FACENORMAL1_1)*SURFACEINTEGRAL]]
-26.	expanded: conditional(isgreaterthan(1.0*_FACENORMAL1_1, 0), 1.0*CELL1__u_1*_FACENORMAL1_1, 1.0*CELL2__u_1*_FACENORMAL1_1)*SURFACEINTEGRAL
-27.	Basic->Expr: conditional(isgreaterthan(1.0_FACENORMAL1_1, 0), 1.0 * CELL1__u_1 * _FACENORMAL1_1, 1.0 * CELL2__u_1 * _FACENORMAL1_1) * SURFACEINTEGRAL
-28.	SP sterms = Vector{Vector{SymEngine.Basic}}[[[conditional(isgreaterthan(1.0*_FACENORMAL1_1, 0), 1.0*CELL1__u_1*_FACENORMAL1_1, 1.0*CELL2__u_1*_FACENORMAL1_1)*SURFACEINTEGRAL]]]
-29.	SP LHS = Vector{Vector{SymEngine.Basic}}[[[]]]
-30.	SP RHS = Vector{Vector{SymEngine.Basic}}[[[]]]
-31.	SP surfLHS = Vector{Vector{SymEngine.Basic}}[[[conditional(isgreaterthan(1.0*_FACENORMAL1_1, 0), 1.0*CELL1__u_1*_FACENORMAL1_1, 1.0*CELL2__u_1*_FACENORMAL1_1)]]]
-32.	SP surfRHS = Vector{Vector{SymEngine.Basic}}[[[]]]
-33.	SP NONLINEAR = Vector{Vector{SymEngine.Basic}}[[[]]]
-34.	Linearized: Vector{Vector{SymEngine.Basic}}[[[]]] + surface(Vector{Vector{SymEngine.Basic}}[[[conditional(isgreaterthan(1.0*_FACENORMAL1_1, 0), 1.0*CELL1__u_1*_FACENORMAL1_1, 1.0*CELL2__u_1*_FACENORMAL1_1)]]]) = Vector{Vector{SymEngine.Basic}}[[[]]] + surface(Vector{Vector{SymEngine.Basic}}[[[]]])
-35.	flux, before modifying for time: Vector{Vector{SymEngine.Basic}}[[[conditional(isgreaterthan(1.0*_FACENORMAL1_1, 0), 1.0*CELL1__u_1*_FACENORMAL1_1, 1.0*CELL2__u_1*_FACENORMAL1_1)]]] - Vector{Vector{SymEngine.Basic}}[[[]]]
-36.	flux, modified for time stepping: Vector{Vector{SymEngine.Basic}}[[[]]] + Vector{Vector{SymEngine.Basic}}[[[-conditional(isgreaterthan(1.0*_FACENORMAL1_1, 0), 1.0*CELL1__u_1*_FACENORMAL1_1, 1.0*CELL2__u_1*_FACENORMAL1_1)]]]
-37.	source, before modifying for time: Vector{Vector{SymEngine.Basic}}[[[]]] - Vector{Vector{SymEngine.Basic}}[[[]]]
-38.	source, modified for time stepping: Vector{Vector{SymEngine.Basic}}[[[]]] + Vector{Vector{SymEngine.Basic}}[[[]]]
-39.	lhs symexpression:
+17.	Set time stepper values to dt=0.005, Nsteps=100
+18.	Initial condition for u : Union{Float64, GenFunction}[0.0]
+19.	Added coefficient a : [1]
+20.	Making conservation form for variable(s): Any[:u]
+21.	Conservation form, input: ["surface(upwind(a,u))"]
+22.	SP expr = Any[:(surface(upwind(a, u)))]
+23.	SP insert parameters -> Any[:(surface(upwind(a, u)))]
+24.	SP replace symbols -> Any[:((finch_state.ops[5]).op((finch_state.ops[28]).op(SymEngine.Basic[1.0], SymEngine.Basic[_u_1])))]
+25.	SP handle callbacks -> Any[:((finch_state.ops[5]).op((finch_state.ops[28]).op(SymEngine.Basic[1.0], SymEngine.Basic[_u_1])))]
+26.	SP apply ops -> Any[SymEngine.Basic[conditional(isgreaterthan(1.0*_FACENORMAL1_1, 0), 1.0*CELL1__u_1*_FACENORMAL1_1, 1.0*CELL2__u_1*_FACENORMAL1_1)*SURFACEINTEGRAL]]
+27.	expanded: conditional(isgreaterthan(1.0*_FACENORMAL1_1, 0), 1.0*CELL1__u_1*_FACENORMAL1_1, 1.0*CELL2__u_1*_FACENORMAL1_1)*SURFACEINTEGRAL
+28.	Basic->Expr: conditional(isgreaterthan(1.0_FACENORMAL1_1, 0), 1.0 * CELL1__u_1 * _FACENORMAL1_1, 1.0 * CELL2__u_1 * _FACENORMAL1_1) * SURFACEINTEGRAL
+29.	SP sterms = Vector{Vector{SymEngine.Basic}}[[[conditional(isgreaterthan(1.0*_FACENORMAL1_1, 0), 1.0*CELL1__u_1*_FACENORMAL1_1, 1.0*CELL2__u_1*_FACENORMAL1_1)*SURFACEINTEGRAL]]]
+30.	SP LHS = Vector{Vector{SymEngine.Basic}}[[[]]]
+31.	SP RHS = Vector{Vector{SymEngine.Basic}}[[[]]]
+32.	SP surfLHS = Vector{Vector{SymEngine.Basic}}[[[conditional(isgreaterthan(1.0*_FACENORMAL1_1, 0), 1.0*CELL1__u_1*_FACENORMAL1_1, 1.0*CELL2__u_1*_FACENORMAL1_1)]]]
+33.	SP surfRHS = Vector{Vector{SymEngine.Basic}}[[[]]]
+34.	SP NONLINEAR = Vector{Vector{SymEngine.Basic}}[[[]]]
+35.	Linearized: Vector{Vector{SymEngine.Basic}}[[[]]] + surface(Vector{Vector{SymEngine.Basic}}[[[conditional(isgreaterthan(1.0*_FACENORMAL1_1, 0), 1.0*CELL1__u_1*_FACENORMAL1_1, 1.0*CELL2__u_1*_FACENORMAL1_1)]]]) = Vector{Vector{SymEngine.Basic}}[[[]]] + surface(Vector{Vector{SymEngine.Basic}}[[[]]])
+36.	flux, before modifying for time: Vector{Vector{SymEngine.Basic}}[[[conditional(isgreaterthan(1.0*_FACENORMAL1_1, 0), 1.0*CELL1__u_1*_FACENORMAL1_1, 1.0*CELL2__u_1*_FACENORMAL1_1)]]] - Vector{Vector{SymEngine.Basic}}[[[]]]
+37.	flux, modified for time stepping: Vector{Vector{SymEngine.Basic}}[[[]]] + Vector{Vector{SymEngine.Basic}}[[[-conditional(isgreaterthan(1.0*_FACENORMAL1_1, 0), 1.0*CELL1__u_1*_FACENORMAL1_1, 1.0*CELL2__u_1*_FACENORMAL1_1)]]]
+38.	source, before modifying for time: Vector{Vector{SymEngine.Basic}}[[[]]] - Vector{Vector{SymEngine.Basic}}[[[]]]
+39.	source, modified for time stepping: Vector{Vector{SymEngine.Basic}}[[[]]] + Vector{Vector{SymEngine.Basic}}[[[]]]
+40.	lhs symexpression:
 	Any[Any[Any[]]]
-40.	rhs symexpression:
+41.	rhs symexpression:
 	Any[Any[Any[]]]
-41.	lhs surface symexpression:
+42.	lhs surface symexpression:
 	Any[Any[Any[]]]
-42.	rhs surface symexpression:
+43.	rhs surface symexpression:
 	Any[Any[Any[SymExpression(:(-(conditional_function(1.0 * FACENORMAL1_1 > 0, 1.0 * CELL1u_1 * FACENORMAL1_1, 1.0 * CELL2u_1 * FACENORMAL1_1))), Any[FACENORMAL1_1, CELL1u_1, FACENORMAL1_1, CELL2u_1, FACENORMAL1_1])]]]
-43.	Latex equation:
+44.	Latex equation:
 		Latex equation:
 		$ \int_{K}\left[\left[\right]\right] dx + \int_{\partial K}\left[\left[\right]\right] ds = \int_{K}\left[\left[\right]\right] dx + \int_{\partial K}\left[\left[-\left(conditional\left(>\left(1.0 * normal_{1}, 0\right), 1.0 * u_{1+} * normal_{1}, 1.0 * u_{1-} * normal_{1}\right)\right)\right]\right] ds
-44.	Conservation form IR: block:
+45.	Conservation form IR: block:
 ├─ TIMER
 │  ├─ allocate
 │  └─ block:allocation
@@ -443,7 +444,7 @@
                            │     └─ nothing
                            └─ nothing
 
-45.	Code layer: 
+46.	Code layer: 
 function generated_solve_function_for_u(var::Vector{Variable{FT}}, mesh::Grid, refel::Refel, geometric_factors::GeometricFactors, fv_info::FVInfo, config::FinchConfig, coefficients::Vector{Coefficient}, variables::Vector{Variable{FT}}, test_functions::Vector{Coefficient}, ordered_indexers::Vector{Indexer}, prob::FinchProblem, time_stepper::Stepper, buffers::ParallelBuffers, timer_output::TimerOutput, nl_var=nothing) where FT<:AbstractFloat
     
     # User specified data types for int and float
@@ -675,35 +676,35 @@ end # function
 
 
 
-46.	Generated function: generated_solve_function_for_u(var::Vector{Variable{FT}}, mesh::Grid, refel::Refel, geometric_factors::GeometricFactors, fv_info::FVInfo, config::FinchConfig, coefficients::Vector{Coefficient}, variables::Vector{Variable{FT}}, test_functions::Vector{Coefficient}, ordered_indexers::Vector{Indexer}, prob::FinchProblem, time_stepper::Stepper, buffers::ParallelBuffers, timer_output::TimerOutput, nl_var = nothing)
 47.	Generated function: generated_solve_function_for_u(var::Vector{Variable{FT}}, mesh::Grid, refel::Refel, geometric_factors::GeometricFactors, fv_info::FVInfo, config::FinchConfig, coefficients::Vector{Coefficient}, variables::Vector{Variable{FT}}, test_functions::Vector{Coefficient}, ordered_indexers::Vector{Indexer}, prob::FinchProblem, time_stepper::Stepper, buffers::ParallelBuffers, timer_output::TimerOutput, nl_var = nothing)
-48.	Imported code from finch-gpu-test/fvad1dgpucode-newkernel.jl
-49.	Built initial conditions for: u
-50.	Indexed variables detected, but no assembly loops specified. Using default.
-51.	Solved for [u]
-52.	Closed generated code files.
-53.	 ────────────────────────────────────────────────────────────────────────────────
+48.	Generated function: generated_solve_function_for_u(var::Vector{Variable{FT}}, mesh::Grid, refel::Refel, geometric_factors::GeometricFactors, fv_info::FVInfo, config::FinchConfig, coefficients::Vector{Coefficient}, variables::Vector{Variable{FT}}, test_functions::Vector{Coefficient}, ordered_indexers::Vector{Indexer}, prob::FinchProblem, time_stepper::Stepper, buffers::ParallelBuffers, timer_output::TimerOutput, nl_var = nothing)
+49.	Imported code from finch-gpu-test/fvad1dgpucode-newkernel.jl
+50.	Built initial conditions for: u
+51.	Indexed variables detected, but no assembly loops specified. Using default.
+52.	Solved for [u]
+53.	Closed generated code files.
+54.	 ────────────────────────────────────────────────────────────────────────────────
                                         Time                    Allocations      
                                ───────────────────────   ────────────────────────
-       Tot / % measured:             110s /  73.8%           4.69GiB /  34.7%    
+       Tot / % measured:            96.9s /  60.1%           4.69GiB /  34.7%    
 
  Section               ncalls     time    %tot     avg     alloc    %tot      avg
  ────────────────────────────────────────────────────────────────────────────────
- Mesh                       1    33.4s   41.2%   33.4s    388MiB   23.2%   388MiB
-   mesh2grid                1    16.5s   20.3%   16.5s    223MiB   13.3%   223MiB
-   gen/read                 1    290ms    0.4%   290ms   3.87MiB    0.2%  3.87MiB
-   geo factors              1    211ms    0.3%   211ms   4.64MiB    0.3%  4.64MiB
-     fv_info                1    134ms    0.2%   134ms   3.97MiB    0.2%  3.97MiB
-   bids                     1   99.1ms    0.1%  99.1ms   2.85MiB    0.2%  2.85MiB
- CodeGen                    1    27.1s   33.5%   27.1s    489MiB   29.3%   489MiB
- Solve                      1    20.5s   25.3%   20.5s    791MiB   47.4%   791MiB
-   FV_solve                 1    19.9s   24.6%   19.9s    760MiB   45.5%   760MiB
-     GPU alloc              1    10.2s   12.6%   10.2s    398MiB   23.9%   398MiB
-     time_steps             1    3.68s    4.5%   3.68s    152MiB    9.1%   152MiB
-       step_assembly      201    3.45s    4.3%  17.2ms    146MiB    8.8%   745KiB
-         bdry_vals        201    1.38s    1.7%  6.85ms   54.6MiB    3.3%   278KiB
-       update_sol         201    217ms    0.3%  1.08ms   5.76MiB    0.3%  29.3KiB
-     allocate               1   2.51μs    0.0%  2.51μs      896B    0.0%     896B
+ Mesh                       1    23.9s   41.0%   23.9s    389MiB   23.3%   389MiB
+   mesh2grid                1    11.6s   19.9%   11.6s    223MiB   13.4%   223MiB
+   gen/read                 1    230ms    0.4%   230ms   3.88MiB    0.2%  3.88MiB
+   geo factors              1    151ms    0.3%   151ms   4.78MiB    0.3%  4.78MiB
+     fv_info                1   93.7ms    0.2%  93.7ms   3.96MiB    0.2%  3.96MiB
+   bids                     1   70.4ms    0.1%  70.4ms   2.85MiB    0.2%  2.85MiB
+ CodeGen                    1    19.7s   33.8%   19.7s    489MiB   29.3%   489MiB
+ Solve                      1    14.7s   25.2%   14.7s    791MiB   47.4%   791MiB
+   FV_solve                 1    14.2s   24.4%   14.2s    760MiB   45.5%   760MiB
+     GPU alloc              1    7.30s   12.5%   7.30s    398MiB   23.8%   398MiB
+     time_steps             1    2.71s    4.6%   2.71s    152MiB    9.1%   152MiB
+       step_assembly      100    2.51s    4.3%  25.1ms    146MiB    8.7%  1.46MiB
+         bdry_vals        100    988ms    1.7%  9.88ms   54.4MiB    3.3%   557KiB
+       update_sol         100    190ms    0.3%  1.90ms   5.77MiB    0.3%  59.0KiB
+     allocate               1   3.29μs    0.0%  3.29μs   3.91KiB    0.0%  3.91KiB
  ────────────────────────────────────────────────────────────────────────────────
 
-54.	Completed. Closing Log.
+55.	Completed. Closing Log.

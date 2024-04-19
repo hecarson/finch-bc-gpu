@@ -295,7 +295,7 @@ function generated_solve_function_for_u(var::Vector{Variable{FT}}, mesh::Grid, r
             # copy_bdry_vals_to_vector(var, solution, mesh, dofs_per_node, prob);
             # place_vector_in_vars(var, solution);
 
-            copyto!(var[1].values, variables_1_values_gpu)
+            # copyto!(var[1].values, variables_1_values_gpu) # CHANGED
 
             #= No post-step function specified =#
             t = (t + dt)
@@ -323,7 +323,7 @@ function generated_solve_function_for_u(var::Vector{Variable{FT}}, mesh::Grid, r
         
     end # timer:time_steps
 
-    
+    copyto!(var[1].values, variables_1_values_gpu) # CHANGED
     
     return nothing;
     

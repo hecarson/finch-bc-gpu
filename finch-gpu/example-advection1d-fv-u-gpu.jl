@@ -4,6 +4,7 @@
 
 ### If the Finch package has already been added, use this line #########
 using Finch # Note: to add the package, first do: ]add "https://github.com/paralab/Finch.git"
+using CUDA
 
 ### If not, use these four lines (working from the examples directory) ###
 # if !@isdefined(Finch)
@@ -24,8 +25,8 @@ timeStepper(EULER_EXPLICIT)
 Finch.finch_state.config.use_gpu = true
 
 # Mesh
-# n = 100 # number of elements
-n = 10
+n = 100 # number of elements
+# n = 1000
 mesh(LINEMESH, elsperdim=n, bids=2)
 
 # Variables and BCs
@@ -50,9 +51,13 @@ boundary(u, 2, NO_BC)
 # boundary(v, 2, NO_BC)
 # boundary(w, 2, DIRICHLET, 0)
 
+nsteps = 100
+dt = 0.5 / nsteps
+setSteps(dt, nsteps)
+
 # Time interval and initial condition
-T = 0.5;
-timeInterval(T)
+# T = 0.5;
+# timeInterval(T)
 initial(u, 0)
 # initial(v, 0)
 # initial(w, 0)
@@ -71,12 +76,13 @@ conservationForm(u, "surface(upwind(a,u))")
 importCode("finch-gpu-test/fvad1dgpucode-newkernel")
 
 # solve([u,v,w])
-solve(u)
-out_file = open("fvad1d-u-gpu-sol.txt", "w")
-println(out_file, "u: $(u.values)")
+# solve(u)
+CUDA.@profile solve(u)
+# out_file = open("fvad1d-u-gpu-sol.txt", "w")
+# println(out_file, "u: $(u.values)")
 # println(out_file, "v: $(v.values)")
 # println(out_file, "w: $(w.values)")
-close(out_file)
+# close(out_file)
 
 finalizeFinch()
 

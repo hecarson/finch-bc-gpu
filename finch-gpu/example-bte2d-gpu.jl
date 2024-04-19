@@ -77,7 +77,8 @@ MPI = Finch.MPI;
 # This matches the mesh in model_setup_BTE.in
 mesh(QUADMESH, # quad elements
     # elsperdim=[5, 5], # elements in each direction: 20 x 5 uniform grid
-    elsperdim=[20, 20],
+    # elsperdim=[20, 20],
+    elsperdim=[100, 100],
     interval=[0, 525e-6, 0, 525e-6],  # interval in each direction
     bids=4, # 4 boundary IDs for this mesh correspond to left, right, bottom, top
     partitions=cell_partitions) # If there are enough procs to also do cell partitioning
@@ -176,15 +177,15 @@ Finch.finch_state.fv_geo_factors.volume .*= 4 * pi / ndirs;
 # end
 # Finch.reset_timer!(Finch.finch_state.timer_output)
 
-# nsteps = 100;
-nsteps = 100000;
+nsteps = 100;
+# nsteps = 100000;
 setSteps(dt, nsteps);
 
 evalInitialConditions();
 get_integrated_intensity!(G_last.values, I.values, ndirs, nbands);
 
-solve(I)
-# CUDA.@profile solve(I)
+# solve(I)
+CUDA.@profile solve(I)
 # out_file = open("bte2d-sol.txt", "w")
 # println(out_file, "I: $(I.values)")
 # close(out_file)

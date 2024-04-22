@@ -42,7 +42,9 @@ if use_unstructured
 else
     # a uniform grid of quads on a 0.1 x 0.3 rectangle domain
     # mesh(QUADMESH, elsperdim=[15, 45], bids=4, interval=[0, 0.1, 0, 0.3])
-    mesh(QUADMESH, elsperdim=[5, 5], bids=4, interval=[0, 0.1, 0, 0.1])
+    # mesh(QUADMESH, elsperdim=[10, 10], bids=4, interval=[0, 0.1, 0, 0.1])
+    # mesh(QUADMESH, elsperdim=[100, 100], bids=4, interval=[0, 0.1, 0, 0.1])
+    mesh(QUADMESH, elsperdim=[300, 300], bids=4, interval=[0, 0.1, 0, 0.1])
 end
 
 # Variables and BCs
@@ -59,9 +61,13 @@ boundary(u, 2, NO_BC) # x=0.1
 boundary(u, 3, NO_BC) # y=0
 boundary(u, 4, NO_BC) # y=0.3
 
+nsteps = 100
+dt = 1.3 / nsteps
+setSteps(dt, nsteps)
+
 # Time interval and initial condition
-T = 1.3;
-timeInterval(T)
+# T = 1.3;
+# timeInterval(T)
 initial(u, "0")
 
 # Coefficients
@@ -73,7 +79,7 @@ coefficient("s", ["0.1 * sin(pi*x)^4 * sin(pi*y)^4"]) # source
 conservationForm(u, "s + surface(upwind(a,u))");
 
 # exportCode("fvad2dgpucode") # uncomment to export generated code to a file
-importCode("finch-gpu-test/fvad2dgpucode-newkernel")
+importCode("finch-gpu/fvad2dgpucode-newkernel")
 
 # solve(u)
 @CUDA.profile solve(u)

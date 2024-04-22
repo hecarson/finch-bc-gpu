@@ -93,7 +93,7 @@ function gpu_assembly_kernel(mesh_elemental_order_gpu, geometric_factors_volume_
     return nothing;
 end # GPU kernel
 
-include("ad_bdry_kernels.jl")
+include("ad1d_bdry_kernels.jl")
 
 function gpu_update_sol_kernel(solution, global_vector, dt, fv_dofs_partition, values_per_dof, components, variable1_values)
     @inbounds begin

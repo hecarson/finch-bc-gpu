@@ -30,7 +30,7 @@ finch_variables::Vector{String} = Vector{String}())::String
         gen_bc_body_finch(code_buffer, func_expr, index_vars, bc_expr_args, finch_variables)
     else
         func_body = func_expr.args[2]
-        gen_main_body!(code_buffer, func_body)
+        gen_main_body(code_buffer, func_body)
         println(code_buffer)
         println(code_buffer, "result_vector[thread_id] = result")
     end
@@ -44,7 +44,12 @@ end
 function gen_kernel_header(code_buffer::IOBuffer, func_expr::Expr, index_args::Vector{String},
 add_finch_code::Bool, bi::Int, bc_expr_args::Dict{String, String})
     call_expr = func_expr.args[1]
-    print(code_buffer, "function $(call_expr.args[1])_bi_$(bi)_gpu(")
+
+    if add_finch_code
+        print(code_buffer, "function $(call_expr.args[1])_bi_$(bi)_gpu(")
+    else
+        print(code_buffer, "function $(call_expr.args[1])_gpu(")
+    end
 
     # Set of parameters that have a provided expression argument
     bc_expr_arg_params::Set{String} = Set()

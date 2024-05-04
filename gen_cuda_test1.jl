@@ -1,8 +1,8 @@
 include("gen_cuda.jl")
 
-input_path = "/uufs/chpc.utah.edu/common/home/u1309986/bc-gpu/input_code1.jl"
+input_path = "/uufs/chpc.utah.edu/common/home/u1309986/bc-gpu/input_code_test1.jl"
 input_code = read(input_path, String)
-cuda_code = gen_bc_cuda(input_code, bc_index_vars=["a", "b", "c"], add_finch_code=false)
+cuda_code = gen_bc_cuda(input_code, index_vars=["a", "b", "c"], add_finch_code=false)
 println(cuda_code)
 
 #=

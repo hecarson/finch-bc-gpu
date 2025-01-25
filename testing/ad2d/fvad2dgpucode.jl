@@ -41,7 +41,7 @@ function gpu_assembly_kernel(mesh_elemental_order_gpu, fv_info_cellCenters_gpu, 
         x = fv_info_cellCenters_gpu[1, eid]
         y = fv_info_cellCenters_gpu[2, eid]
         z = 0.0
-        value__s_1_gpu = Float64(0.1 * sin(pi*x)^4 * sin(pi*y)^4)
+        value__s_1_gpu = Float64(genfunction_5(x,y,z,t,eid, 0, index_values))
         volume = geometric_factors_volume_gpu[eid]
         #= Compute source terms (volume integral) =#
         source_gpu = value__s_1_gpu
@@ -77,8 +77,8 @@ function gpu_assembly_kernel(mesh_elemental_order_gpu, fv_info_cellCenters_gpu, 
             x = fv_info_faceCenters_gpu[1, fid]
             y = fv_info_faceCenters_gpu[2, fid]
             z = 0.0
-            value__a_1_gpu = Float64(0.1*cos(pi*x/2/0.1))
-            value__a_2_gpu = Float64(0.3*sin(pi*x/2/0.1))
+            value__a_1_gpu = Float64(genfunction_3(x,y,z,t,eid, fid, index_values))
+            value__a_2_gpu = Float64(genfunction_4(x,y,z,t,eid, fid, index_values))
             value_CELL1_u_1_gpu = variables_1_values_gpu[1, eid]
             value_CELL2_u_1_gpu = variables_1_values_gpu[1, neighbor]
             area = geometric_factors_area_gpu[fid]
@@ -86,9 +86,7 @@ function gpu_assembly_kernel(mesh_elemental_order_gpu, fv_info_cellCenters_gpu, 
             #= Compute flux terms (surface integral) =#
             flux_tmp_gpu = (-(((((value__a_1_gpu * FACENORMAL1_1_gpu) + (value__a_2_gpu * FACENORMAL1_2_gpu)) > 0)) ? ((((value__a_1_gpu * FACENORMAL1_1_gpu) + (value__a_2_gpu * FACENORMAL1_2_gpu)) * value_CELL1_u_1_gpu)) : ((((value__a_1_gpu * FACENORMAL1_1_gpu) + (value__a_2_gpu * FACENORMAL1_2_gpu)) * value_CELL2_u_1_gpu))))
             # boundary conditions handled on cpu side
-            # flux_tmp_gpu = (fbid_gpu==1 || fbid_gpu==2 || fbid_gpu==3 || fbid_gpu==4) ? 0.0 : flux_tmp_gpu
-            # FIX
-            flux_tmp_gpu = (fbid_gpu==1) ? 0.0 : flux_tmp_gpu
+            flux_tmp_gpu = (fbid_gpu==1 || fbid_gpu==2 || fbid_gpu==3 || fbid_gpu==4) ? 0.0 : flux_tmp_gpu
             
             flux_gpu = (flux_gpu + (flux_tmp_gpu * area_over_volume))
         end
@@ -120,9 +118,7 @@ function generated_solve_function_for_u(var::Vector{Variable{FT}}, mesh::Grid, r
     pre_step_function = prob.pre_step_function;
     post_step_function = prob.post_step_function;
     
-    # FIX
-    num_elements = mesh.nel_owned
-    tmp_index_ranges = [num_elements]
+    
     
     # Prepare some useful numbers
     # dofs_per_node = 1;
@@ -271,9 +267,6 @@ function generated_solve_function_for_u(var::Vector{Variable{FT}}, mesh::Grid, r
                             index_offset = 0
                             
                             row_index = index_offset + 1 + dofs_per_node * (eid - 1);
-
-                            # FIX
-                            flux_tmp[1] = 0
                             
                             apply_boundary_conditions_face_rhs(var, eid, fid, fbid, mesh, refel, geometric_factors, fv_info, prob, 
                                                                 t, dt, flux_tmp, bdry_done, index_offset, index_values)

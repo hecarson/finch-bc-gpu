@@ -1,3 +1,10 @@
+"""
+Finds the maximum difference between two solution arrays.
+
+Example:
+python check_sol_error.py ad2d/{fvad2d-sol.txt,fvad2dgpu-sol.txt}
+"""
+
 import re
 from argparse import ArgumentParser
 

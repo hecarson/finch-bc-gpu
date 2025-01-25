@@ -1,0 +1,784 @@
+######################################
+# Finch Log for: FVadvection2d
+######################################
+(verbosity = 3)
+1.	Set time stepper to Euler-explicit
+2.	Building simple quad mesh with nx*nx elements, nx=[5, 5]
+3.	Building full grid from mesh data. Types = FV
+4.	Building reference element: 2D, order=1, nfaces=4
+5.	Initial node setup: 0.6971378326416016
+6.	Remove duplicate nodes: 1.5493099689483643
+7.	Vertex, face, bdry setup: 0.2795710563659668
+8.	Remove duplicate bdry nodes: 0.04000997543334961
+9.	Total grid building time: 16.53880286216736
+10.	Added mesh with 36 vertices and 25 elements.
+11.	Full grid has 36 nodes.
+12.	Added boundary ID: 2 including [6, 0] nodes, [5, 0] faces.
+13.	Added boundary ID: 3 including [4, 0, 0] nodes, [5, 0, 0] faces.
+14.	Added boundary ID: 4 including [4, 0, 0, 0] nodes, [5, 0, 0, 0] faces.
+15.	Added variable: u of type: scalar, location: cell
+16.	Generated function: genfunction_1
+17.	Boundary condition: var=u bid=1 type=flux val=genfunction_1
+18.	Boundary condition: var=u bid=2 type=No BC val=0.0
+19.	Boundary condition: var=u bid=3 type=No BC val=0.0
+20.	Boundary condition: var=u bid=4 type=No BC val=0.0
+21.	Generated function: genfunction_2
+22.	Initial condition for u : Union{Float64, GenFunction}[GenFunction("genfunction_2", "x::Union{Float64,Float64},y::Union{Float64,Float64},z::Union{Float64,Float64},t::Union{Float64,Float64},node_index::Int,face_index::Int,indices::Vector{Int}", "0", 0, Finch.genfunction_2)]
+23.	Generated function: genfunction_3
+24.	Generated function: genfunction_4
+25.	Added coefficient a : ["0.1*cos(pi*x/2/0.1)", "0.3*sin(pi*x/2/0.1)"]
+26.	Generated function: genfunction_5
+27.	Added coefficient s : ["0.1 * sin(pi*x)^4 * sin(pi*y)^4"]
+28.	Making conservation form for variable(s): Any[:u]
+29.	Conservation form, input: ["s + surface(upwind(a,u))"]
+30.	SP expr = Any[:(s + surface(upwind(a, u)))]
+31.	SP insert parameters -> Any[:(s + surface(upwind(a, u)))]
+32.	SP replace symbols -> Any[:(SymEngine.Basic[_s_1] + (finch_state.ops[5]).op((finch_state.ops[28]).op(SymEngine.Basic[_a_1, _a_2], SymEngine.Basic[_u_1])))]
+33.	SP handle callbacks -> Any[:(SymEngine.Basic[_s_1] + (finch_state.ops[5]).op((finch_state.ops[28]).op(SymEngine.Basic[_a_1, _a_2], SymEngine.Basic[_u_1])))]
+34.	SP apply ops -> Any[SymEngine.Basic[_s_1 + conditional(isgreaterthan(_a_1*_FACENORMAL1_1 + _a_2*_FACENORMAL1_2, 0), (_a_1*_FACENORMAL1_1 + _a_2*_FACENORMAL1_2)*CELL1__u_1, (_a_1*_FACENORMAL1_1 + _a_2*_FACENORMAL1_2)*CELL2__u_1)*SURFACEINTEGRAL]]
+35.	expanded: _s_1 + conditional(isgreaterthan(_a_1*_FACENORMAL1_1 + _a_2*_FACENORMAL1_2, 0), (_a_1*_FACENORMAL1_1 + _a_2*_FACENORMAL1_2)*CELL1__u_1, (_a_1*_FACENORMAL1_1 + _a_2*_FACENORMAL1_2)*CELL2__u_1)*SURFACEINTEGRAL
+36.	Basic->Expr: _s_1 + conditional(isgreaterthan(_a_1 * _FACENORMAL1_1 + _a_2 * _FACENORMAL1_2, 0), (_a_1 * _FACENORMAL1_1 + _a_2 * _FACENORMAL1_2) * CELL1__u_1, (_a_1 * _FACENORMAL1_1 + _a_2 * _FACENORMAL1_2) * CELL2__u_1) * SURFACEINTEGRAL
+37.	SP sterms = Vector{Vector{SymEngine.Basic}}[[[_s_1, conditional(isgreaterthan(_a_1*_FACENORMAL1_1 + _a_2*_FACENORMAL1_2, 0), (_a_1*_FACENORMAL1_1 + _a_2*_FACENORMAL1_2)*CELL1__u_1, (_a_1*_FACENORMAL1_1 + _a_2*_FACENORMAL1_2)*CELL2__u_1)*SURFACEINTEGRAL]]]
+38.	SP LHS = Vector{Vector{SymEngine.Basic}}[[[]]]
+39.	SP RHS = Vector{Vector{SymEngine.Basic}}[[[-_s_1]]]
+40.	SP surfLHS = Vector{Vector{SymEngine.Basic}}[[[conditional(isgreaterthan(_a_1*_FACENORMAL1_1 + _a_2*_FACENORMAL1_2, 0), (_a_1*_FACENORMAL1_1 + _a_2*_FACENORMAL1_2)*CELL1__u_1, (_a_1*_FACENORMAL1_1 + _a_2*_FACENORMAL1_2)*CELL2__u_1)]]]
+41.	SP surfRHS = Vector{Vector{SymEngine.Basic}}[[[]]]
+42.	SP NONLINEAR = Vector{Vector{SymEngine.Basic}}[[[]]]
+43.	Linearized: Vector{Vector{SymEngine.Basic}}[[[]]] + surface(Vector{Vector{SymEngine.Basic}}[[[conditional(isgreaterthan(_a_1*_FACENORMAL1_1 + _a_2*_FACENORMAL1_2, 0), (_a_1*_FACENORMAL1_1 + _a_2*_FACENORMAL1_2)*CELL1__u_1, (_a_1*_FACENORMAL1_1 + _a_2*_FACENORMAL1_2)*CELL2__u_1)]]]) = Vector{Vector{SymEngine.Basic}}[[[-_s_1]]] + surface(Vector{Vector{SymEngine.Basic}}[[[]]])
+44.	flux, before modifying for time: Vector{Vector{SymEngine.Basic}}[[[conditional(isgreaterthan(_a_1*_FACENORMAL1_1 + _a_2*_FACENORMAL1_2, 0), (_a_1*_FACENORMAL1_1 + _a_2*_FACENORMAL1_2)*CELL1__u_1, (_a_1*_FACENORMAL1_1 + _a_2*_FACENORMAL1_2)*CELL2__u_1)]]] - Vector{Vector{SymEngine.Basic}}[[[]]]
+45.	flux, modified for time stepping: Vector{Vector{SymEngine.Basic}}[[[]]] + Vector{Vector{SymEngine.Basic}}[[[-conditional(isgreaterthan(_a_1*_FACENORMAL1_1 + _a_2*_FACENORMAL1_2, 0), (_a_1*_FACENORMAL1_1 + _a_2*_FACENORMAL1_2)*CELL1__u_1, (_a_1*_FACENORMAL1_1 + _a_2*_FACENORMAL1_2)*CELL2__u_1)]]]
+46.	source, before modifying for time: Vector{Vector{SymEngine.Basic}}[[[]]] - Vector{Vector{SymEngine.Basic}}[[[-_s_1]]]
+47.	source, modified for time stepping: Vector{Vector{SymEngine.Basic}}[[[]]] + Vector{Vector{SymEngine.Basic}}[[[_s_1]]]
+48.	lhs symexpression:
+	Any[Any[Any[]]]
+49.	rhs symexpression:
+	Any[Any[Any[SymExpression(s_1, Any[s_1])]]]
+50.	lhs surface symexpression:
+	Any[Any[Any[]]]
+51.	rhs surface symexpression:
+	Any[Any[Any[SymExpression(:(-(conditional_function(a_1 * FACENORMAL1_1 + a_2 * FACENORMAL1_2 > 0, (a_1 * FACENORMAL1_1 + a_2 * FACENORMAL1_2) * CELL1u_1, (a_1 * FACENORMAL1_1 + a_2 * FACENORMAL1_2) * CELL2u_1))), Any[a_1, FACENORMAL1_1, a_2, FACENORMAL1_2, a_1, FACENORMAL1_1, a_2, FACENORMAL1_2, CELL1u_1, a_1, FACENORMAL1_1, a_2, FACENORMAL1_2, CELL2u_1])]]]
+52.	Latex equation:
+		Latex equation:
+		$ \int_{K}\left[\left[\right]\right] dx + \int_{\partial K}\left[\left[\right]\right] ds = \int_{K}\left[\left[s_{1}\right]\right] dx + \int_{\partial K}\left[\left[-\left(conditional\left(>\left(\left(a_{1} * normal_{1}\right) + \left(a_{2} * normal_{2}\right), 0\right), \left(\left(a_{1} * normal_{1}\right) + \left(a_{2} * normal_{2}\right)\right) * u_{1+}, \left(\left(a_{1} * normal_{1}\right) + \left(a_{2} * normal_{2}\right)\right) * u_{1-}\right)\right)\right]\right] ds
+53.	Conservation form IR: block:
+├─ TIMER
+│  ├─ allocate
+│  └─ block:allocation
+│     ├─ (comment)Allocate global vectors.
+│     ├─ =
+│     │  ├─ global_vector
+│     │  └─ Allocate{CustomFloat}
+│     │     └─ fv_dofs_partition
+│     ├─ =
+│     │  ├─ global_solution
+│     │  └─ Allocate{CustomFloat}
+│     │     └─ fv_dofs_global
+│     ├─ =
+│     │  ├─ solution
+│     │  └─ Allocate{CustomFloat}
+│     │     └─ fv_dofs_partition
+│     ├─ (comment)Allocate elemental source and flux.
+│     ├─ =
+│     │  ├─ source
+│     │  └─ Allocate{CustomFloat}
+│     │     └─ dofs_per_loop
+│     ├─ =
+│     │  ├─ flux
+│     │  └─ Allocate{CustomFloat}
+│     │     └─ dofs_per_loop
+│     ├─ =
+│     │  ├─ flux_tmp
+│     │  └─ Allocate{CustomFloat}
+│     │     └─ dofs_per_loop
+│     ├─ (comment)Boundary done flag for each face.
+│     ├─ =
+│     │  ├─ bdry_done
+│     │  └─ Allocate{CustomInt}
+│     │     └─ num_faces
+│     ├─ (comment)Flux done flag for each face so that it is not done twice.
+│     ├─ =
+│     │  ├─ face_flux_done
+│     │  └─ Allocate{Bool}
+│     │     └─ num_faces
+│     ├─ (comment)No indexed variables
+│     └─ =
+│        ├─ index_values
+│        └─ Allocate{CustomInt}
+│           └─ 0
+└─ block:
+   ├─ (comment)No parent-child mesh needed
+   ├─ if
+   │  ├─ >
+   │  │  ├─ num_partitions
+   │  │  └─ 1
+   │  ├─ block:
+   │  │  └─ GHOST_EXCHANGE_FV
+   │  │     └─ 0
+   │  └─ nothing
+   ├─ GATHER_VARS
+   │  └─ solution
+   ├─ =
+   │  ├─ t
+   │  └─ 0.0
+   ├─ =
+   │  ├─ dt
+   │  └─ time_stepper
+   │     └─ dt
+   ├─ (comment)###############################################
+   ├─ (comment)Time stepping loop
+   └─ TIMER
+      ├─ time_steps
+      └─ block:
+         ├─ block:
+         │  ├─ =
+         │  │  ├─ last_minor_progress
+         │  │  └─ 0
+         │  ├─ =
+         │  │  ├─ last_major_progress
+         │  │  └─ 0
+         │  └─ if
+         │     ├─ ==
+         │     │  ├─ proc_rank
+         │     │  └─ 0
+         │     ├─ block:
+         │     │  └─ PRINT_STRING
+         │     │     └─ "Time step progress(%) 0"
+         │     └─ nothing
+         └─ Loop{ti=1, time_stepper.Nsteps}
+            └─ block:
+               ├─ FILL_ARRAY
+               │  ├─ bdry_done
+               │  ├─ 0
+               │  └─ num_faces
+               ├─ FILL_ARRAY
+               │  ├─ face_flux_done
+               │  ├─ false
+               │  └─ num_faces
+               ├─ =
+               │  ├─ next_nonzero_index
+               │  └─ 1
+               ├─ if
+               │  ├─ >
+               │  │  ├─ num_partitions
+               │  │  └─ 1
+               │  ├─ block:
+               │  │  └─ GHOST_EXCHANGE_FV
+               │  └─ nothing
+               ├─ (comment)No pre-step function specified
+               ├─ TIMER
+               │  ├─ step_assembly
+               │  └─ block:assembly loop
+               │     └─ Loop{ei=1, num_elements}
+               │        └─ block:assembly
+               │           ├─ =
+               │           │  ├─ eid
+               │           │  └─ mesh
+               │           │     └─ elemental_order
+               │           │        └─ ei
+               │           ├─ =
+               │           │  ├─ index_offset
+               │           │  └─ 0
+               │           ├─ (comment)Begin assembly code
+               │           ├─ =
+               │           │  ├─ source
+               │           │  │  └─ 1
+               │           │  └─ 0.0
+               │           ├─ =
+               │           │  ├─ flux
+               │           │  │  └─ 1
+               │           │  └─ 0.0
+               │           ├─ block:volume integral
+               │           │  ├─ block:volume coefficients
+               │           │  │  ├─ (comment)Evaluate volume coefficients.
+               │           │  │  ├─ =
+               │           │  │  │  ├─ x
+               │           │  │  │  └─ fv_info
+               │           │  │  │     └─ cellCenters
+               │           │  │  │        ├─ 1
+               │           │  │  │        └─ eid
+               │           │  │  ├─ =
+               │           │  │  │  ├─ y
+               │           │  │  │  └─ fv_info
+               │           │  │  │     └─ cellCenters
+               │           │  │  │        ├─ 2
+               │           │  │  │        └─ eid
+               │           │  │  ├─ =
+               │           │  │  │  ├─ z
+               │           │  │  │  └─ 0.0
+               │           │  │  ├─ =
+               │           │  │  │  ├─ value__s_1
+               │           │  │  │  └─ COEF_EVAL
+               │           │  │  │     ├─ 2
+               │           │  │  │     ├─ 1
+               │           │  │  │     ├─ x
+               │           │  │  │     ├─ y
+               │           │  │  │     ├─ z
+               │           │  │  │     ├─ t
+               │           │  │  │     ├─ eid
+               │           │  │  │     ├─ 0
+               │           │  │  │     └─ index_values
+               │           │  │  └─ =
+               │           │  │     ├─ volume
+               │           │  │     └─ geometric_factors
+               │           │  │        └─ volume
+               │           │  │           └─ eid
+               │           │  ├─ (comment)Compute source terms (volume integral)
+               │           │  └─ block:
+               │           │     └─ =
+               │           │        ├─ source
+               │           │        │  └─ 1
+               │           │        └─ value__s_1
+               │           ├─ block:surface integral
+               │           │  ├─ (comment)Compute flux terms (surface integral) in a face loop
+               │           │  └─ Loop{fi=1, faces_per_element}
+               │           │     └─ block:
+               │           │        ├─ =
+               │           │        │  ├─ flux_tmp
+               │           │        │  │  └─ 1
+               │           │        │  └─ 0.0
+               │           │        ├─ (comment)
+               │           │        ├─ =
+               │           │        │  ├─ fid
+               │           │        │  └─ mesh
+               │           │        │     └─ element2face
+               │           │        │        ├─ fi
+               │           │        │        └─ eid
+               │           │        ├─ =
+               │           │        │  ├─ fbid
+               │           │        │  └─ mesh
+               │           │        │     └─ facebid
+               │           │        │        └─ fid
+               │           │        ├─ =
+               │           │        │  ├─ left_el
+               │           │        │  └─ mesh
+               │           │        │     └─ face2element
+               │           │        │        ├─ 1
+               │           │        │        └─ fid
+               │           │        ├─ =
+               │           │        │  ├─ right_el
+               │           │        │  └─ mesh
+               │           │        │     └─ face2element
+               │           │        │        ├─ 2
+               │           │        │        └─ fid
+               │           │        ├─ =
+               │           │        │  ├─ neighbor
+               │           │        │  └─ left_el
+               │           │        ├─ =
+               │           │        │  ├─ out_side
+               │           │        │  └─ 1
+               │           │        ├─ if
+               │           │        │  ├─ &&
+               │           │        │  │  ├─ ==
+               │           │        │  │  │  ├─ eid
+               │           │        │  │  │  └─ left_el
+               │           │        │  │  └─ >
+               │           │        │  │     ├─ right_el
+               │           │        │  │     └─ 0
+               │           │        │  ├─ block:
+               │           │        │  │  ├─ =
+               │           │        │  │  │  ├─ neighbor
+               │           │        │  │  │  └─ right_el
+               │           │        │  │  └─ =
+               │           │        │  │     ├─ out_side
+               │           │        │  │     └─ 2
+               │           │        │  └─ nothing
+               │           │        ├─ block:surface coefficients
+               │           │        │  ├─ (comment)Evaluate surface coefficients.
+               │           │        │  ├─ if/else
+               │           │        │  │  ├─ ==
+               │           │        │  │  │  ├─ eid
+               │           │        │  │  │  └─ left_el
+               │           │        │  │  ├─ block:
+               │           │        │  │  │  ├─ =
+               │           │        │  │  │  │  ├─ normal_sign
+               │           │        │  │  │  │  └─ 1
+               │           │        │  │  │  └─ =
+               │           │        │  │  │     ├─ in_side
+               │           │        │  │  │     └─ 1
+               │           │        │  │  └─ block:
+               │           │        │  │     ├─ =
+               │           │        │  │     │  ├─ normal_sign
+               │           │        │  │     │  └─ -1
+               │           │        │  │     └─ =
+               │           │        │  │        ├─ in_side
+               │           │        │  │        └─ 2
+               │           │        │  ├─ =
+               │           │        │  │  ├─ FACENORMAL1_1
+               │           │        │  │  └─ *
+               │           │        │  │     ├─ normal_sign
+               │           │        │  │     └─ mesh
+               │           │        │  │        └─ facenormals
+               │           │        │  │           ├─ 1
+               │           │        │  │           └─ fid
+               │           │        │  ├─ =
+               │           │        │  │  ├─ FACENORMAL2_1
+               │           │        │  │  └─ -
+               │           │        │  │     └─ FACENORMAL1_1
+               │           │        │  ├─ =
+               │           │        │  │  ├─ FACENORMAL1_2
+               │           │        │  │  └─ *
+               │           │        │  │     ├─ normal_sign
+               │           │        │  │     └─ mesh
+               │           │        │  │        └─ facenormals
+               │           │        │  │           ├─ 2
+               │           │        │  │           └─ fid
+               │           │        │  ├─ =
+               │           │        │  │  ├─ FACENORMAL2_2
+               │           │        │  │  └─ -
+               │           │        │  │     └─ FACENORMAL1_2
+               │           │        │  ├─ =
+               │           │        │  │  ├─ x
+               │           │        │  │  └─ fv_info
+               │           │        │  │     └─ faceCenters
+               │           │        │  │        ├─ 1
+               │           │        │  │        └─ fid
+               │           │        │  ├─ =
+               │           │        │  │  ├─ y
+               │           │        │  │  └─ fv_info
+               │           │        │  │     └─ faceCenters
+               │           │        │  │        ├─ 2
+               │           │        │  │        └─ fid
+               │           │        │  ├─ =
+               │           │        │  │  ├─ z
+               │           │        │  │  └─ 0.0
+               │           │        │  ├─ =
+               │           │        │  │  ├─ value__a_1
+               │           │        │  │  └─ COEF_EVAL
+               │           │        │  │     ├─ 1
+               │           │        │  │     ├─ 1
+               │           │        │  │     ├─ x
+               │           │        │  │     ├─ y
+               │           │        │  │     ├─ z
+               │           │        │  │     ├─ t
+               │           │        │  │     ├─ eid
+               │           │        │  │     ├─ fid
+               │           │        │  │     └─ index_values
+               │           │        │  ├─ =
+               │           │        │  │  ├─ value__a_2
+               │           │        │  │  └─ COEF_EVAL
+               │           │        │  │     ├─ 1
+               │           │        │  │     ├─ 2
+               │           │        │  │     ├─ x
+               │           │        │  │     ├─ y
+               │           │        │  │     ├─ z
+               │           │        │  │     ├─ t
+               │           │        │  │     ├─ eid
+               │           │        │  │     ├─ fid
+               │           │        │  │     └─ index_values
+               │           │        │  ├─ =
+               │           │        │  │  ├─ value_CELL1_u_1
+               │           │        │  │  └─ KNOWN_VAR
+               │           │        │  │     ├─ 1
+               │           │        │  │     ├─ 1
+               │           │        │  │     └─ eid
+               │           │        │  ├─ =
+               │           │        │  │  ├─ value_CELL2_u_1
+               │           │        │  │  └─ KNOWN_VAR
+               │           │        │  │     ├─ 1
+               │           │        │  │     ├─ 1
+               │           │        │  │     └─ neighbor
+               │           │        │  ├─ =
+               │           │        │  │  ├─ area
+               │           │        │  │  └─ geometric_factors
+               │           │        │  │     └─ area
+               │           │        │  │        └─ fid
+               │           │        │  └─ =
+               │           │        │     ├─ area_over_volume
+               │           │        │     └─ /
+               │           │        │        ├─ area
+               │           │        │        └─ volume
+               │           │        ├─ (comment)Compute flux terms (surface integral)
+               │           │        ├─ block:
+               │           │        │  └─ =
+               │           │        │     ├─ flux_tmp
+               │           │        │     │  └─ 1
+               │           │        │     └─ -
+               │           │        │        └─ conditional_function
+               │           │        │           ├─ >
+               │           │        │           │  ├─ +
+               │           │        │           │  │  ├─ *
+               │           │        │           │  │  │  ├─ value__a_1
+               │           │        │           │  │  │  └─ FACENORMAL1_1
+               │           │        │           │  │  └─ *
+               │           │        │           │  │     ├─ value__a_2
+               │           │        │           │  │     └─ FACENORMAL1_2
+               │           │        │           │  └─ 0
+               │           │        │           ├─ *
+               │           │        │           │  ├─ +
+               │           │        │           │  │  ├─ *
+               │           │        │           │  │  │  ├─ value__a_1
+               │           │        │           │  │  │  └─ FACENORMAL1_1
+               │           │        │           │  │  └─ *
+               │           │        │           │  │     ├─ value__a_2
+               │           │        │           │  │     └─ FACENORMAL1_2
+               │           │        │           │  └─ value_CELL1_u_1
+               │           │        │           └─ *
+               │           │        │              ├─ +
+               │           │        │              │  ├─ *
+               │           │        │              │  │  ├─ value__a_1
+               │           │        │              │  │  └─ FACENORMAL1_1
+               │           │        │              │  └─ *
+               │           │        │              │     ├─ value__a_2
+               │           │        │              │     └─ FACENORMAL1_2
+               │           │        │              └─ value_CELL2_u_1
+               │           │        ├─ block:boundary conditions
+               │           │        │  ├─ (comment)Apply boundary conditions
+               │           │        │  └─ if
+               │           │        │     ├─ >
+               │           │        │     │  ├─ fbid
+               │           │        │     │  └─ 0
+               │           │        │     ├─ block:
+               │           │        │     │  └─ apply_boundary_conditions_face_rhs
+               │           │        │     │     ├─ var
+               │           │        │     │     ├─ eid
+               │           │        │     │     ├─ fid
+               │           │        │     │     ├─ fbid
+               │           │        │     │     ├─ mesh
+               │           │        │     │     ├─ refel
+               │           │        │     │     ├─ geometric_factors
+               │           │        │     │     ├─ fv_info
+               │           │        │     │     ├─ prob
+               │           │        │     │     ├─ t
+               │           │        │     │     ├─ dt
+               │           │        │     │     ├─ flux_tmp
+               │           │        │     │     ├─ bdry_done
+               │           │        │     │     ├─ index_offset
+               │           │        │     │     └─ index_values
+               │           │        │     └─ nothing
+               │           │        └─ =
+               │           │           ├─ flux
+               │           │           │  └─ 1
+               │           │           └─ +
+               │           │              ├─ flux
+               │           │              │  └─ 1
+               │           │              └─ *
+               │           │                 ├─ flux_tmp
+               │           │                 │  └─ 1
+               │           │                 └─ area_over_volume
+               │           └─ block:local to global
+               │              ├─ (comment)Place elemental parts in global system.
+               │              └─ block:
+               │                 └─ =
+               │                    ├─ global_vector
+               │                    │  └─ eid
+               │                    └─ +
+               │                       ├─ source
+               │                       │  └─ 1
+               │                       └─ flux
+               │                          └─ 1
+               ├─ TIMER
+               │  ├─ update_sol
+               │  └─ Loop{update_i=1, fv_dofs_partition}
+               │     └─ block:
+               │        └─ =
+               │           ├─ solution
+               │           │  └─ update_i
+               │           └─ +
+               │              ├─ solution
+               │              │  └─ update_i
+               │              └─ *
+               │                 ├─ dt
+               │                 └─ global_vector
+               │                    └─ update_i
+               ├─ BDRY_TO_VECTOR
+               │  └─ solution
+               ├─ SCATTER_VARS
+               │  └─ solution
+               ├─ (comment)No post-step function specified
+               ├─ =
+               │  ├─ t
+               │  └─ +
+               │     ├─ t
+               │     └─ dt
+               └─ block:
+                  └─ if/else
+                     ├─ >=
+                     │  ├─ *
+                     │  │  ├─ 100.0
+                     │  │  └─ /
+                     │  │     ├─ ti
+                     │  │     └─ time_stepper
+                     │  │        └─ Nsteps
+                     │  └─ +
+                     │     ├─ last_major_progress
+                     │     └─ 10
+                     ├─ block:
+                     │  ├─ =
+                     │  │  ├─ last_major_progress
+                     │  │  └─ +
+                     │  │     ├─ last_major_progress
+                     │  │     └─ 10
+                     │  ├─ =
+                     │  │  ├─ last_minor_progress
+                     │  │  └─ +
+                     │  │     ├─ last_minor_progress
+                     │  │     └─ 2
+                     │  └─ if
+                     │     ├─ ==
+                     │     │  ├─ proc_rank
+                     │     │  └─ 0
+                     │     ├─ block:
+                     │     │  └─ PRINT_STRING
+                     │     │     └─ last_major_progress
+                     │     └─ nothing
+                     └─ block:
+                        └─ if
+                           ├─ >=
+                           │  ├─ *
+                           │  │  ├─ 100.0
+                           │  │  └─ /
+                           │  │     ├─ ti
+                           │  │     └─ time_stepper
+                           │  │        └─ Nsteps
+                           │  └─ +
+                           │     ├─ last_minor_progress
+                           │     └─ 2
+                           ├─ block:
+                           │  ├─ =
+                           │  │  ├─ last_minor_progress
+                           │  │  └─ +
+                           │  │     ├─ last_minor_progress
+                           │  │     └─ 2
+                           │  └─ if
+                           │     ├─ ==
+                           │     │  ├─ proc_rank
+                           │     │  └─ 0
+                           │     ├─ block:
+                           │     │  └─ PRINT_STRING
+                           │     │     └─ "."
+                           │     └─ nothing
+                           └─ nothing
+
+54.	Code layer: 
+function generated_solve_function_for_u(var::Vector{Variable{FT}}, mesh::Grid, refel::Refel, geometric_factors::GeometricFactors, fv_info::FVInfo, config::FinchConfig, coefficients::Vector{Coefficient}, variables::Vector{Variable{FT}}, test_functions::Vector{Coefficient}, ordered_indexers::Vector{Indexer}, prob::FinchProblem, time_stepper::Stepper, buffers::ParallelBuffers, timer_output::TimerOutput, nl_var=nothing) where FT<:AbstractFloat
+    
+    # User specified data types for int and float
+    # int type is Int64
+    # float type is Float64
+    
+    # pre/post step functions if defined
+    pre_step_function = prob.pre_step_function;
+    post_step_function = prob.post_step_function;
+    
+    function genfunction_3(x::Union{Float64,Float64},y::Union{Float64,Float64},z::Union{Float64,Float64},t::Union{Float64,Float64},node_index::Int,face_index::Int,indices::Vector{Int}) return (0.1*cos(pi*x/2/0.1)); end
+    function genfunction_4(x::Union{Float64,Float64},y::Union{Float64,Float64},z::Union{Float64,Float64},t::Union{Float64,Float64},node_index::Int,face_index::Int,indices::Vector{Int}) return (0.3*sin(pi*x/2/0.1)); end
+    function genfunction_5(x::Union{Float64,Float64},y::Union{Float64,Float64},z::Union{Float64,Float64},t::Union{Float64,Float64},node_index::Int,face_index::Int,indices::Vector{Int}) return (0.1 * sin(pi*x)^4 * sin(pi*y)^4); end
+    
+    
+    # Prepare some useful numbers
+    dofs_per_node = 1;
+    dofs_per_loop = 1;
+    dof_offsets = [0];
+    nnodes_partition = size(mesh.allnodes,2);
+    nnodes_global = nnodes_partition;
+    num_elements = mesh.nel_owned;
+    num_elements_global = mesh.nel_global;
+    num_elements_ghost = mesh.nel_ghost;
+    num_faces = mesh.nface_owned + mesh.nface_ghost;
+    
+    dofs_global = dofs_per_node * nnodes_global;
+    fv_dofs_global = dofs_per_node * num_elements_global;
+    dofs_partition = dofs_per_node * nnodes_partition;
+    fv_dofs_partition = dofs_per_node * (num_elements + num_elements_ghost);
+    num_partitions = config.num_partitions;
+    proc_rank = config.proc_rank;
+    
+    nodes_per_element = refel.Np;
+    qnodes_per_element = refel.Nqp;
+    faces_per_element = refel.Nfaces;
+    nodes_per_face = refel.Nfp[1];
+    dofs_per_element = dofs_per_node * nodes_per_element;
+    local_system_size = dofs_per_loop * nodes_per_element;
+    
+    
+    # FVM specific pieces
+    
+    @timeit timer_output "allocate" begin
+        #= Allocate global vectors. =#
+        global_vector::Vector{Float64} = zeros(Float64, fv_dofs_partition)
+        global_solution::Vector{Float64} = zeros(Float64, fv_dofs_global)
+        solution::Vector{Float64} = zeros(Float64, fv_dofs_partition)
+        #= Allocate elemental source and flux. =#
+        source::Vector{Float64} = zeros(Float64, dofs_per_loop)
+        flux::Vector{Float64} = zeros(Float64, dofs_per_loop)
+        flux_tmp::Vector{Float64} = zeros(Float64, dofs_per_loop)
+        #= Boundary done flag for each face. =#
+        bdry_done::Vector{Int64} = zeros(Int64, num_faces)
+        #= Flux done flag for each face so that it is not done twice. =#
+        face_flux_done::Vector{Bool} = zeros(Bool, num_faces)
+        #= No indexed variables =#
+        index_values::Vector{Int64} = zeros(Int64, 0)
+        
+    end # timer:allocate
+
+    
+    #= No parent-child mesh needed =#
+    if (num_partitions > 1)
+        exchange_ghosts_fv(var, mesh, dofs_per_node, 0, config);
+    end
+
+    solution = get_var_vals(var, solution, );
+    t = 0.0
+    dt = time_stepper.dt
+    #= ############################################### =#
+    #= Time stepping loop =#
+    @timeit timer_output "time_steps" begin
+        last_minor_progress = 0
+        last_major_progress = 0
+        if (proc_rank == 0)
+            print("Time step progress(%) 0")
+        end
+
+        for ti = 1:time_stepper.Nsteps
+            bdry_done .= 0
+            face_flux_done .= false
+            next_nonzero_index = 1
+            if (num_partitions > 1)
+                exchange_ghosts_fv(var, mesh, dofs_per_node, ti, config);
+            end
+
+            #= No pre-step function specified =#
+            @timeit timer_output "step_assembly" begin
+                for ei = 1:num_elements
+                    eid = mesh.elemental_order[ei]
+                    index_offset = 0
+                    #= Begin assembly code =#
+                    source[1] = 0.0
+                    flux[1] = 0.0
+                    #= Evaluate volume coefficients. =#
+                    x = fv_info.cellCenters[1, eid]
+                    y = fv_info.cellCenters[2, eid]
+                    z = 0.0
+                    value__s_1::Float64 = Float64(genfunction_5(x,y,z,t,eid, 0, index_values))
+                    volume = geometric_factors.volume[eid]
+                    #= Compute source terms (volume integral) =#
+                    source[1] = value__s_1
+                    #= Compute flux terms (surface integral) in a face loop =#
+                    for fi = 1:faces_per_element
+                        flux_tmp[1] = 0.0
+                        #=  =#
+                        fid = mesh.element2face[fi, eid]
+                        fbid = mesh.facebid[fid]
+                        left_el = mesh.face2element[1, fid]
+                        right_el = mesh.face2element[2, fid]
+                        neighbor = left_el
+                        out_side = 1
+                        if ((eid == left_el) && (right_el > 0))
+                            neighbor = right_el
+                            out_side = 2
+                        end
+
+                        #= Evaluate surface coefficients. =#
+                        if (eid == left_el)
+                            normal_sign = 1
+                            in_side = 1
+                        
+                        else
+                            normal_sign = -1
+                            in_side = 2
+                        end
+
+                        FACENORMAL1_1 = (normal_sign * mesh.facenormals[1, fid])
+                        FACENORMAL2_1 = (-FACENORMAL1_1)
+                        FACENORMAL1_2 = (normal_sign * mesh.facenormals[2, fid])
+                        FACENORMAL2_2 = (-FACENORMAL1_2)
+                        x = fv_info.faceCenters[1, fid]
+                        y = fv_info.faceCenters[2, fid]
+                        z = 0.0
+                        value__a_1::Float64 = Float64(genfunction_3(x,y,z,t,eid, fid, index_values))
+                        value__a_2::Float64 = Float64(genfunction_4(x,y,z,t,eid, fid, index_values))
+                        value_CELL1_u_1 = variables[1].values[1, eid]
+                        value_CELL2_u_1 = variables[1].values[1, neighbor]
+                        area = geometric_factors.area[fid]
+                        area_over_volume = (area / volume)
+                        #= Compute flux terms (surface integral) =#
+                        flux_tmp[1] = (-conditional_function((((value__a_1 * FACENORMAL1_1) + (value__a_2 * FACENORMAL1_2)) > 0), (((value__a_1 * FACENORMAL1_1) + (value__a_2 * FACENORMAL1_2)) * value_CELL1_u_1), (((value__a_1 * FACENORMAL1_1) + (value__a_2 * FACENORMAL1_2)) * value_CELL2_u_1)))
+                        #= Apply boundary conditions =#
+                        if (fbid > 0)
+                            apply_boundary_conditions_face_rhs(var, eid, fid, fbid, mesh, refel, geometric_factors, fv_info, prob, t, dt, flux_tmp, bdry_done, index_offset, index_values)
+                        end
+
+                        flux[1] = (flux[1] + (flux_tmp[1] * area_over_volume))
+                    end
+
+                    #= Place elemental parts in global system. =#
+                    global_vector[eid] = (source[1] + flux[1])
+                end
+
+                
+            end # timer:step_assembly
+
+            
+            @timeit timer_output "update_sol" begin
+                for update_i = 1:fv_dofs_partition
+                    solution[update_i] = (solution[update_i] + (dt * global_vector[update_i]))
+                end
+
+                
+            end # timer:update_sol
+
+            
+            copy_bdry_vals_to_vector(var, solution, mesh, dofs_per_node, prob);
+            place_vector_in_vars(var, solution);
+            #= No post-step function specified =#
+            t = (t + dt)
+            if ((100.0 * (ti / time_stepper.Nsteps)) >= (last_major_progress + 10))
+                last_major_progress = (last_major_progress + 10)
+                last_minor_progress = (last_minor_progress + 2)
+                if (proc_rank == 0)
+                    print(string(last_major_progress))
+                end
+
+            
+            else
+                if ((100.0 * (ti / time_stepper.Nsteps)) >= (last_minor_progress + 2))
+                    last_minor_progress = (last_minor_progress + 2)
+                    if (proc_rank == 0)
+                        print(".")
+                    end
+
+                end
+
+            end
+
+        end
+
+        
+    end # timer:time_steps
+
+    
+    
+    return nothing;
+    
+end # function
+
+
+
+55.	Generated function: generated_solve_function_for_u(var::Vector{Variable{FT}}, mesh::Grid, refel::Refel, geometric_factors::GeometricFactors, fv_info::FVInfo, config::FinchConfig, coefficients::Vector{Coefficient}, variables::Vector{Variable{FT}}, test_functions::Vector{Coefficient}, ordered_indexers::Vector{Indexer}, prob::FinchProblem, time_stepper::Stepper, buffers::ParallelBuffers, timer_output::TimerOutput, nl_var = nothing)
+56.	Built initial conditions for: u
+57.	Indexed variables detected, but no assembly loops specified. Using default.
+58.	Solved for [u]
+59.	Closed generated code files.
+60.	────────────────────────────────────────────────────────────────────────────────
+                                       Time                    Allocations      
+                              ───────────────────────   ────────────────────────
+      Tot / % measured:            70.5s /  88.2%           1.97GiB /  52.4%    
+
+Section               ncalls     time    %tot     avg     alloc    %tot      avg
+────────────────────────────────────────────────────────────────────────────────
+Mesh                       1    35.5s   57.1%   35.5s    519MiB   49.0%   519MiB
+  mesh2grid                1    16.6s   26.7%   16.6s    269MiB   25.5%   269MiB
+  bids                     1    1.40s    2.2%   1.40s   67.9MiB    6.4%  67.9MiB
+  geo factors              1    806ms    1.3%   806ms   19.0MiB    1.8%  19.0MiB
+    fv_info                1    139ms    0.2%   139ms   4.09MiB    0.4%  4.09MiB
+  gen/read                 1    656ms    1.1%   656ms   8.71MiB    0.8%  8.71MiB
+CodeGen                    1    24.6s   39.6%   24.6s    471MiB   44.5%   471MiB
+Solve                      1    2.07s    3.3%   2.07s   68.0MiB    6.4%  68.0MiB
+  FV_solve                 1    1.45s    2.3%   1.45s   36.5MiB    3.5%  36.5MiB
+    time_steps             1   80.0ms    0.1%  80.0ms   11.3MiB    1.1%  11.3MiB
+      step_assembly    4.33k   72.4ms    0.1%  16.7μs   11.3MiB    1.1%  2.66KiB
+      update_sol       4.33k   1.75ms    0.0%   403ns     0.00B    0.0%    0.00B
+    allocate               1   3.77μs    0.0%  3.77μs   1.64KiB    0.0%  1.64KiB
+────────────────────────────────────────────────────────────────────────────────
+
+61.	Completed. Closing Log.

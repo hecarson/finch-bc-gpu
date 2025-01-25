@@ -1,0 +1,15 @@
+# Overview
+
+The goal of this work is to generate CUDA kernels for computing boundary values in Finch. This project was done by Carson He for CS 4970 spring 2024 at the University of Utah for an undergraduate thesis.
+
+The boundary condition CUDA kernel generator is at `gen_cuda.jl`. Examples of using `gen_cuda.jl` can be found at the `gen_cuda_X.jl` files such as `gen_cuda_isothermal.jl` (for the Finch BTE 2D GPU example).
+
+# Notes
+
+As of Jan 2025, Finch does not work with Julia v1.11, which is the version loaded with `module load julia` on the U of U CHPC. Use `module load julia/1.9.2`.
+
+When attempting to make GPU versions of the advection1d and advection2d examples, errors was discovered in the Finch solver code generator at `src/generate_code_layer_julia_gpu.jl`. which appeared to be a variable name typo. In commit `defa03cfb64ff546508b47a1257b83369759ce9b` on branch `master` of Finch, a fix to one error is to replace `genfunction_list` with `genfunction_names` on lines 88 and 89 of `src/generate_code_layer_julia_gpu.jl`. This will allow code generation to complete without crashing. For the advection2d example, the resulting solver code will still cause a crash, and manual fixes in the solver code are at `testing/fvad2dgpucode-fix.jl`.
+
+# Tips
+
+Running a Finch file, such as one of the examples, can take a long time (roughly 30 seconds to 2 minutes), which can be very annoying when debugging. Most of this time is spent by the Julia runtime compiling the Julia code. If a Finch file is run with a command like `julia example.jl` each time, then the compilation time penalty will be present each time. This compilation penalty can be avoided on future runs by launching a Julia REPL (e.g. with `julia`) and running a Finch file with `include("example.jl")`. I went through an entire semester not knowing this. Please learn from my past suffering.

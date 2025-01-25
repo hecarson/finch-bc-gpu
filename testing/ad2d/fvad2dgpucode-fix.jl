@@ -1,15 +1,15 @@
 #=
-Generated functions for FVbte2dgpu
+Generated functions for advection2d
 =#
 
 #=
 Auxilliary code that will be included in Finch
 =#
 
-function gpu_assembly_kernel(mesh_elemental_order_gpu, variables_3_values_gpu, variables_2_values_gpu, variables_1_values_gpu, geometric_factors_volume_gpu, 
-                mesh_element2face_gpu, mesh_facebid_gpu, mesh_face2element_gpu, mesh_facenormals_gpu, fv_info_faceCenters_gpu, 
-                coefficients_3_value_gpu, coefficients_1_value_gpu, coefficients_2_value_gpu, geometric_factors_area_gpu, global_vector_gpu, 
-                dofs_global, faces_per_element, index_ranges)
+function gpu_assembly_kernel(mesh_elemental_order_gpu, fv_info_cellCenters_gpu, coefficients_2_value_gpu, geometric_factors_volume_gpu, mesh_element2face_gpu, 
+                mesh_facebid_gpu, mesh_face2element_gpu, mesh_facenormals_gpu, fv_info_faceCenters_gpu, coefficients_1_value_gpu, 
+                variables_1_values_gpu, geometric_factors_area_gpu, global_vector_gpu, dofs_global, faces_per_element, 
+                index_ranges)
     
     # The dofs handled by this thread are determined by the global thread ID
     # max_threads = blockDim().x * gridDim().x * blockDim().y * gridDim().y * blockDim().z * gridDim().z;
@@ -22,8 +22,6 @@ function gpu_assembly_kernel(mesh_elemental_order_gpu, variables_3_values_gpu, v
     thread_id = threadIdx().x + (block_id - 1) * blockDim().x;
     
     # Index counts
-    num_direction = index_ranges[3];
-    num_band = index_ranges[2];
     num_elements = index_ranges[1];
     
     
@@ -33,22 +31,22 @@ function gpu_assembly_kernel(mesh_elemental_order_gpu, variables_3_values_gpu, v
     while current_dof <= dofs_global
         
         # extract index values
-        INDEX_VAL_direction = Int(mod(current_dof-1, num_direction) + 1);
-        INDEX_VAL_band = Int(floor(mod(current_dof-1, num_band * num_direction) / (num_direction)) + 1);
-        eid = Int(floor(mod(current_dof-1, num_elements * num_direction * num_band) / (num_direction * num_band)) + 1);
+        eid = current_dof;
         
         
         #= Begin assembly code =#
         source_gpu = 0.0
         flux_gpu = 0.0
         #= Evaluate volume coefficients. =#
-        value__beta_band_gpu = variables_3_values_gpu[INDEX_VAL_band, eid]
-        value__Io_band_gpu = variables_2_values_gpu[INDEX_VAL_band, eid]
-        value__I_directionband_gpu = variables_1_values_gpu[(INDEX_VAL_direction + (4*(INDEX_VAL_band-1))), eid]
+        x = fv_info_cellCenters_gpu[1, eid]
+        y = fv_info_cellCenters_gpu[2, eid]
+        z = 0.0
+        # FIX: genfunction_5 is not defined, so replace it with corresponding expression in Finch file
+        # value__s_1_gpu = Float64(genfunction_5(x,y,z,t,eid, 0, index_values))
+        value__s_1_gpu = Float64(0.1 * sin(pi*x)^4 * sin(pi*y)^4)
         volume = geometric_factors_volume_gpu[eid]
         #= Compute source terms (volume integral) =#
-        source_gpu = ((value__beta_band_gpu * value__Io_band_gpu) + ((-value__beta_band_gpu) * value__I_directionband_gpu));
-        
+        source_gpu = value__s_1_gpu
         #= Compute flux terms (surface integral) in a face loop =#
         for fi = 1:faces_per_element
             flux_tmp_gpu = 0.0
@@ -81,18 +79,22 @@ function gpu_assembly_kernel(mesh_elemental_order_gpu, variables_3_values_gpu, v
             x = fv_info_faceCenters_gpu[1, fid]
             y = fv_info_faceCenters_gpu[2, fid]
             z = 0.0
-            value__vg_band_gpu = coefficients_3_value_gpu[INDEX_VAL_band]
-            value__Sx_direction_gpu = coefficients_1_value_gpu[INDEX_VAL_direction]
-            value__Sy_direction_gpu = coefficients_2_value_gpu[INDEX_VAL_direction]
-            value_CELL1_I_directionband_gpu = variables_1_values_gpu[(INDEX_VAL_direction + (4*(INDEX_VAL_band-1))), eid]
-            value_CELL2_I_directionband_gpu = variables_1_values_gpu[(INDEX_VAL_direction + (4*(INDEX_VAL_band-1))), neighbor]
+            # FIX
+            # value__a_1_gpu = Float64(genfunction_3(x,y,z,t,eid, fid, index_values))
+            value__a_1_gpu = Float64(0.1*cos(pi*x/2/0.1))
+            # FIX
+            # value__a_2_gpu = Float64(genfunction_4(x,y,z,t,eid, fid, index_values))
+            value__a_2_gpu = Float64(0.3*sin(pi*x/2/0.1))
+            value_CELL1_u_1_gpu = variables_1_values_gpu[1, eid]
+            value_CELL2_u_1_gpu = variables_1_values_gpu[1, neighbor]
             area = geometric_factors_area_gpu[fid]
             area_over_volume = (area / volume)
             #= Compute flux terms (surface integral) =#
-            flux_tmp_gpu = ((-value__vg_band_gpu) * (((((value__Sx_direction_gpu * FACENORMAL1_1_gpu) + (value__Sy_direction_gpu * FACENORMAL1_2_gpu)) > 0)) ? ((((value__Sx_direction_gpu * FACENORMAL1_1_gpu) + (value__Sy_direction_gpu * FACENORMAL1_2_gpu)) * value_CELL1_I_directionband_gpu)) : ((((value__Sx_direction_gpu * FACENORMAL1_1_gpu) + (value__Sy_direction_gpu * FACENORMAL1_2_gpu)) * value_CELL2_I_directionband_gpu))));
-            
+            flux_tmp_gpu = (-(((((value__a_1_gpu * FACENORMAL1_1_gpu) + (value__a_2_gpu * FACENORMAL1_2_gpu)) > 0)) ? ((((value__a_1_gpu * FACENORMAL1_1_gpu) + (value__a_2_gpu * FACENORMAL1_2_gpu)) * value_CELL1_u_1_gpu)) : ((((value__a_1_gpu * FACENORMAL1_1_gpu) + (value__a_2_gpu * FACENORMAL1_2_gpu)) * value_CELL2_u_1_gpu))))
             # boundary conditions handled on cpu side
-            flux_tmp_gpu = (fbid_gpu==1 || fbid_gpu==2 || fbid_gpu==3 || fbid_gpu==4) ? 0.0 : flux_tmp_gpu
+            # FIX: only bid 1 has callback function and is handled on CPU side
+            # flux_tmp_gpu = (fbid_gpu==1 || fbid_gpu==2 || fbid_gpu==3 || fbid_gpu==4) ? 0.0 : flux_tmp_gpu
+            flux_tmp_gpu = (fbid_gpu==1) ? 0.0 : flux_tmp_gpu
             
             flux_gpu = (flux_gpu + (flux_tmp_gpu * area_over_volume))
         end
@@ -112,9 +114,9 @@ end # GPU kernel
 
 
 
-# begin solve function for I
+# begin solve function for u
 
-function generated_solve_function_for_I(var::Vector{Variable{FT}}, mesh::Grid, refel::Refel, geometric_factors::GeometricFactors, fv_info::FVInfo, config::FinchConfig, coefficients::Vector{Coefficient}, variables::Vector{Variable{FT}}, test_functions::Vector{Coefficient}, ordered_indexers::Vector{Indexer}, prob::FinchProblem, time_stepper::Stepper, buffers::ParallelBuffers, timer_output::TimerOutput, nl_var=nothing) where FT<:AbstractFloat
+function generated_solve_function_for_u(var::Vector{Variable{FT}}, mesh::Grid, refel::Refel, geometric_factors::GeometricFactors, fv_info::FVInfo, config::FinchConfig, coefficients::Vector{Coefficient}, variables::Vector{Variable{FT}}, test_functions::Vector{Coefficient}, ordered_indexers::Vector{Indexer}, prob::FinchProblem, time_stepper::Stepper, buffers::ParallelBuffers, timer_output::TimerOutput, nl_var=nothing) where FT<:AbstractFloat
     
     # User specified data types for int and float
     # int type is Int64
@@ -124,14 +126,12 @@ function generated_solve_function_for_I(var::Vector{Variable{FT}}, mesh::Grid, r
     pre_step_function = prob.pre_step_function;
     post_step_function = prob.post_step_function;
     
-    num_elements = mesh.nel_owned;
-    num_band_indices = 13;
-    num_direction_indices = 4;
-    tmp_index_ranges = [num_elements, num_band_indices, num_direction_indices, ];
-    
+    # FIX: define missing variables, definitions are in src/generate_code_layer_julia_gpu.jl in Finch
+    num_elements = mesh.nel_owned
+    tmp_index_ranges = [num_elements]
     
     # Prepare some useful numbers
-    # dofs_per_node = 52;
+    # dofs_per_node = 1;
     # dofs_per_loop = 1;
     # dof_offsets = [0];
     
@@ -194,26 +194,24 @@ function generated_solve_function_for_I(var::Vector{Variable{FT}}, mesh::Grid, r
         bdry_done::Vector{Int64} = zeros(Int64, num_faces)
         #= Flux done flag for each face so that it is not done twice. =#
         face_flux_done::Vector{Bool} = zeros(Bool, num_faces)
-        #= index values to be passed to BCs if needed =#
-        index_values::Vector{Int64} = zeros(Int64, 2)
+        #= No indexed variables =#
+        index_values::Vector{Int64} = zeros(Int64, 0)
         
     end # timer:allocate
 
     @timeit timer_output "GPU alloc" begin
         # Allocate and transfer things to the GPU
         mesh_elemental_order_gpu = CuArray(mesh.elemental_order);
-        variables_3_values_gpu = CuArray(variables[3].values);
-        variables_2_values_gpu = CuArray(variables[2].values);
-        variables_1_values_gpu = CuArray(variables[1].values);
+        fv_info_cellCenters_gpu = CuArray(fv_info.cellCenters);
+        coefficients_2_value_gpu = CuArray([0.0]);
         geometric_factors_volume_gpu = CuArray(geometric_factors.volume);
         mesh_element2face_gpu = CuArray(mesh.element2face);
         mesh_facebid_gpu = CuArray(mesh.facebid);
         mesh_face2element_gpu = CuArray(mesh.face2element);
         mesh_facenormals_gpu = CuArray(mesh.facenormals);
         fv_info_faceCenters_gpu = CuArray(fv_info.faceCenters);
-        coefficients_3_value_gpu = CuArray(Array{Float64}(coefficients[3].value));
-        coefficients_1_value_gpu = CuArray(Array{Float64}(coefficients[1].value));
-        coefficients_2_value_gpu = CuArray(Array{Float64}(coefficients[2].value));
+        coefficients_1_value_gpu = CuArray([0.0, 0.0]);
+        variables_1_values_gpu = CuArray(variables[1].values);
         geometric_factors_area_gpu = CuArray(geometric_factors.area);
         global_vector_gpu = CuArray(global_vector);
         
@@ -228,10 +226,6 @@ function generated_solve_function_for_I(var::Vector{Variable{FT}}, mesh::Grid, r
     solution = get_var_vals(var, solution, );
     t = 0.0
     dt = time_stepper.dt
-
-    # DEBUG
-    global_vector_file = open("bte2d-gv-cpu.txt", "w")
-
     #= ############################################### =#
     #= Time stepping loop =#
     @timeit timer_output "time_steps" begin
@@ -254,17 +248,15 @@ function generated_solve_function_for_I(var::Vector{Variable{FT}}, mesh::Grid, r
                 
                 
                 # Send needed values back to gpu
-                copyto!(variables_3_values_gpu, variables[3].values);
-                copyto!(variables_2_values_gpu, variables[2].values);
                 copyto!(variables_1_values_gpu, variables[1].values);
                 CUDA.synchronize();
                 
                 
                 # This is done on gpu
-                @cuda threads=256 blocks=min(4096,ceil(Int, dofs_global/256)) gpu_assembly_kernel(mesh_elemental_order_gpu, variables_3_values_gpu, variables_2_values_gpu, variables_1_values_gpu, geometric_factors_volume_gpu, 
-                            mesh_element2face_gpu, mesh_facebid_gpu, mesh_face2element_gpu, mesh_facenormals_gpu, fv_info_faceCenters_gpu, 
-                            coefficients_3_value_gpu, coefficients_1_value_gpu, coefficients_2_value_gpu, geometric_factors_area_gpu, global_vector_gpu, 
-                            dofs_global, faces_per_element, index_ranges)
+                @cuda threads=256 blocks=min(4096,ceil(Int, dofs_global/256)) gpu_assembly_kernel(mesh_elemental_order_gpu, fv_info_cellCenters_gpu, coefficients_2_value_gpu, geometric_factors_volume_gpu, mesh_element2face_gpu, 
+                            mesh_facebid_gpu, mesh_face2element_gpu, mesh_facenormals_gpu, fv_info_faceCenters_gpu, coefficients_1_value_gpu, 
+                            variables_1_values_gpu, geometric_factors_area_gpu, global_vector_gpu, dofs_global, faces_per_element, 
+                            index_ranges)
                 
                 
                 # Asynchronously compute boundary values on cpu
@@ -280,32 +272,22 @@ function generated_solve_function_for_I(var::Vector{Variable{FT}}, mesh::Grid, r
                             area = geometric_factors.area[fid]
                             area_over_volume = (area / volume)
                             
-                            for INDEX_VAL_direction = 1:num_direction_indices
-                                for INDEX_VAL_band = 1:num_band_indices
-                                    
-                                    index_values[1] = INDEX_VAL_direction
-                                    index_values[2] = INDEX_VAL_band
-                                    
-                                    index_offset = INDEX_VAL_direction + num_direction_indices * (INDEX_VAL_band - 1) - 1
-                                    
-                                    row_index = index_offset + 1 + dofs_per_node * (eid - 1);
-                                    
-                                    apply_boundary_conditions_face_rhs(var, eid, fid, fbid, mesh, refel, geometric_factors, fv_info, prob, 
-                                                                        t, dt, flux_tmp, bdry_done, index_offset, index_values)
-                                    #
-                                    # store it
-                                    boundary_flux[next_bdry_index] = flux_tmp[1] * area_over_volume;
-                                    boundary_dof_index[next_bdry_index] = row_index;
-                                    next_bdry_index += 1;
+                            
+                            
+                            index_offset = 0
+                            
+                            row_index = index_offset + 1 + dofs_per_node * (eid - 1);
 
-                                    # DEBUG
-                                    if t == 0
-                                        println("bi $bi fi $fi band $INDEX_VAL_band dir $INDEX_VAL_direction : $(flux_tmp[1])")
-                                    end
-                                end
-
-                            end
-
+                            # FIX
+                            flux_tmp[1] = 0
+                            
+                            apply_boundary_conditions_face_rhs(var, eid, fid, fbid, mesh, refel, geometric_factors, fv_info, prob, 
+                                                                t, dt, flux_tmp, bdry_done, index_offset, index_values)
+                            #
+                            # store it
+                            boundary_flux[next_bdry_index] = flux_tmp[1] * area_over_volume;
+                            boundary_dof_index[next_bdry_index] = row_index;
+                            next_bdry_index += 1;
                             
                         end
 
@@ -329,11 +311,6 @@ function generated_solve_function_for_I(var::Vector{Variable{FT}}, mesh::Grid, r
                 
             end # timer:step_assembly
 
-
-            println(global_vector_file, "ti=$(ti), t=$(t)")
-            println(global_vector_file, global_vector)
-            println(global_vector_file, "=" ^ 30)
-            println(global_vector_file)
             
             @timeit timer_output "update_sol" begin
                 for update_i = 1:fv_dofs_partition
@@ -346,7 +323,7 @@ function generated_solve_function_for_I(var::Vector{Variable{FT}}, mesh::Grid, r
             
             copy_bdry_vals_to_vector(var, solution, mesh, dofs_per_node, prob);
             place_vector_in_vars(var, solution);
-            post_step_function()
+            #= No post-step function specified =#
             t = (t + dt)
             if ((100.0 * (ti / time_stepper.Nsteps)) >= (last_major_progress + 10))
                 last_major_progress = (last_major_progress + 10)
@@ -369,8 +346,6 @@ function generated_solve_function_for_I(var::Vector{Variable{FT}}, mesh::Grid, r
 
         end
 
-        # DEBUG
-        close(global_vector_file)
         
     end # timer:time_steps
 
@@ -382,17 +357,5 @@ end # function
 
 
 
-# end solve function for I
-
-# No code set for Io
-
-# No code set for beta
-
-# No code set for temperature
-
-# No code set for temperatureLast
-
-# No code set for G_last
-
-# No code set for G_next
+# end solve function for u
 

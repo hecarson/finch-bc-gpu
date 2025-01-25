@@ -14,7 +14,7 @@ The boundary condition CUDA kernel generator is at `gen_cuda.jl`. Examples of us
 
 As of Jan 2025, Finch does not work with Julia v1.11, which is the version loaded with `module load julia` on the U of U CHPC. Use `module load julia/1.9.2`.
 
-When attempting to make GPU versions of the advection1d and advection2d examples, errors was discovered in the Finch solver code generator at `src/generate_code_layer_julia_gpu.jl`. which appeared to be a variable name typo. In commit `defa03cfb64ff546508b47a1257b83369759ce9b` on branch `master` of Finch, a fix to one error is to replace `genfunction_list` with `genfunction_names` on lines 88 and 89 of `src/generate_code_layer_julia_gpu.jl`. This will allow code generation to complete without crashing. For the advection2d example, the resulting solver code will still cause a crash, and manual fixes in the solver code are at `testing/fvad2dgpucode-fix.jl`.
+When attempting to make GPU versions of the advection1d and advection2d examples, errors was discovered in the Finch solver code generator at `src/generate_code_layer_julia_gpu.jl`. which appeared to be a variable name typo. In commit `defa03cfb64ff546508b47a1257b83369759ce9b` on branch `master` of Finch, a fix to one error is to replace `genfunction_list` with `genfunction_names` on lines 88 and 89 of `src/generate_code_layer_julia_gpu.jl`. This will allow code generation to complete without crashing. For the advection2d example, the resulting solver code is still buggy, and manual fixes in the solver code are at `testing/fvad2dgpucode-fix.jl`.
 
 # Tips
 

@@ -1,16 +1,52 @@
 const INDENT = ' ' ^ 4
 
 """
-Generates a CUDA kernel for one boundary.
+Generates a CUDA kernel for computing boundary conditions for one boundary ID.
 
+This function essentially turns the body of a loop nest into a CUDA kernel. For example:
+
+for a = 1:max_a
+    for b = 1:max_b
+        for c = 1:max_c
+            result = a + b + c
+            result_vector[a * (max_b * max_c) + b * (max_c) + c] = result
+        end
+    end
+end
+
+is transformed to a CUDA kernel similar to this:
+
+a = (thread_id - 1) ÷ (max_b * max_c) + 1
+b = ((thread_id - 1) ÷ (max_c)) % max_b + 1
+c = ((thread_id - 1) ÷ (1)) % max_c + 1
+result = a + b + c
+result_vector[thread_id] = result
+ 
+input_code should be a Julia function containing the body of a loop nest. The parameters of the function contain the
+index variables (such as a, b, c in the example above) of the loop nest. These index variables need to be specified to
+gen_bc_cuda through the index_vars parameter in loop order (first to last index variable in the loop nest, e.g. in the
+order of a, b, c in the example above). The last statement needs to be "return result" for returning the boundary
+condition value. Examples can be found in the input_code_X.jl files.
+
+In Finch, arguments to a boundary condition function can be an expression. This is seen in the the BTE 2D example with
+the temp parameter of isothermal_bdry. These parameters are called "expression arguments" in this code and are given
+by the bc_expr_args parameter of gen_bc_cuda. An example of using expression arguments is in gen_cuda_isothermal.jl.
+
+The input_code parameters can also include Finch PDE variables, which is the case in the BTE 2D example with the
+intensity parameter. These are defined in the finch_pde_variables parameter of gen_bc_cuda.
+
+Parameters:
+
+input_code: String containing code for a Julia function that computes a boundary condition value
 index_vars: Parameters that should be treated as index vars, in loop order
-add_finch_code: Whether Finch code should be added
+add_finch_code: Whether code should be added to work with Finch solver codes
+bi: Boundary ID
 bc_expr_args: Mapping from parameter names to expressions
-finch_variables: Parameters that are Finch variables
+finch_pde_variables: Parameters that are Finch PDE variables
 """
 function gen_bc_cuda(input_code::String; index_vars::Vector{String} = Vector{String}(), add_finch_code::Bool = true,
 bi::Int = 0, bc_expr_args::Dict{String, String} = Dict{String, String}(),
-finch_variables::Vector{String} = Vector{String}())::String
+finch_pde_variables::Vector{String} = Vector{String}())::String
     func_expr = Meta.parse(input_code)
     Base.remove_linenums!(func_expr)
     code_buffer = IOBuffer()
@@ -27,7 +63,7 @@ finch_variables::Vector{String} = Vector{String}())::String
 
     println(code_buffer)
     if add_finch_code
-        gen_bc_body_finch(code_buffer, func_expr, index_vars, bc_expr_args, finch_variables)
+        gen_bc_body_finch(code_buffer, func_expr, index_vars, bc_expr_args, finch_pde_variables)
     else
         func_body = func_expr.args[2]
         gen_main_body(code_buffer, func_body)
@@ -145,7 +181,7 @@ function gen_main_body(code_buffer::IOBuffer, func_body::Expr)
 end
 
 function gen_bc_body_finch(code_buffer::IOBuffer, func_expr::Expr, bc_index_vars::Vector{String},
-bc_expr_args::Dict{String, String}, finch_variables::Vector{String})
+bc_expr_args::Dict{String, String}, finch_pde_variables::Vector{String})
     println(code_buffer, "fid = mesh_bdryface[fi]")
     println(code_buffer, "eid = mesh_face2element[1,fid]");
     println(code_buffer, "fbid = mesh_bids[bi]");
@@ -191,7 +227,7 @@ bc_expr_args::Dict{String, String}, finch_variables::Vector{String})
     
     println(code_buffer)
     func_body = deepcopy(func_expr.args[2])
-    update_body_ast!(func_body, finch_variables)
+    update_body_ast!(func_body, finch_pde_variables)
     gen_main_body(code_buffer, func_body)
 
     println(code_buffer)
@@ -208,12 +244,12 @@ Update the main BC body AST for use in the GPU kernel
 
 variable_params: list of parameters that are Finch variables
 """
-function update_body_ast!(expr::Expr, finch_variables::Vector{String})
+function update_body_ast!(expr::Expr, finch_pde_variables::Vector{String})
     # Some types of vector accesses need to have an additional index
     if expr.head == :ref
         var = expr.args[1]
         
-        if string(var) in finch_variables
+        if string(var) in finch_pde_variables
             push!(expr.args, :eid)
         elseif var == :normal
             push!(expr.args, :fid)
@@ -226,7 +262,7 @@ function update_body_ast!(expr::Expr, finch_variables::Vector{String})
     for i in eachindex(expr.args)
         part = expr.args[i]
         if typeof(part) == Expr
-            update_body_ast!(part, finch_variables)
+            update_body_ast!(part, finch_pde_variables)
         end
     end
 end

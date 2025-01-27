@@ -1,0 +1,4 @@
+This environment variable needs to be set before running Julia in Nsight Systems with `nsys launch julia ...`
+https://github.com/JuliaLang/julia/issues/51880
+
+LD_LIBRARY_PATH=/uufs/chpc.utah.edu/sys/installdir/r8/julia/1.9.2/lib/julia

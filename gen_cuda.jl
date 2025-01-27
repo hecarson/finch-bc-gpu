@@ -153,17 +153,16 @@ bc_expr_args::Dict{String, String}, finch_variables::Vector{String})
     println(code_buffer, "area = geometric_factors_area[fid]");
     println(code_buffer, "area_over_volume = (area / volume)");
 
-    # Index offset
+    # Index offset. Logic is from Finch src/generate_code_layer_julia_gpu.jl (search for "index_offset").
     index_offset_parts::Vector{String} = []
     index_var_maxes::Vector{String} = ["max_$(index_var)" for index_var in bc_index_vars]
-
     for i in eachindex(bc_index_vars)
-        if i == length(bc_index_vars)
-            index_offset_per_index = "1"
+        if i == 1
+            multiplier = "1"
         else
-            index_offset_per_index = join(index_var_maxes[i + 1 : end], " * ")
+            multiplier = join(index_var_maxes[begin : i - 1], " * ")
         end
-        push!(index_offset_parts, "($(bc_index_vars[i]) - 1) * ($(index_offset_per_index))")
+        push!(index_offset_parts, "($(bc_index_vars[i]) - 1) * ($(multiplier))")
     end
     index_offset = join(index_offset_parts, " + ")
     if index_offset != ""
@@ -177,7 +176,7 @@ bc_expr_args::Dict{String, String}, finch_variables::Vector{String})
         println(code_buffer, "row_index = 1 + dofs_per_node * (eid - 1)")
     end
 
-    # Finch-provided BC function args
+    # Finch-provided BC function args. This is incomplete and does not provide all values provided by Finch.
     println(code_buffer, "for i in 1:dim_faceCenters")
     println(code_buffer, "$(INDENT)facex[thread_id, i] = faceCenters[i, fid]")
     println(code_buffer, "end")
@@ -221,7 +220,7 @@ function update_body_ast!(expr::Expr, finch_variables::Vector{String})
         end
     end
 
-    # Remove "return result"
+    # Remove "return result" statement
     filter!(part -> part != :(return result), expr.args)
 
     for i in eachindex(expr.args)

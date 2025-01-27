@@ -1,5 +1,7 @@
-# Note from Carson:
-# Original advection2d example from Finch with changes
+#=
+Note from Carson:
+Original advection2d example from Finch with changes
+=#
 
 #=
 2D advection using structured or unstructured mesh

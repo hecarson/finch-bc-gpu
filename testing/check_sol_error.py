@@ -1,5 +1,5 @@
 """
-Finds the maximum difference between two solution arrays.
+Finds the maximum percent error between two solution arrays.
 
 Example:
 python check_sol_error.py ad2d/{fvad2d-sol.txt,fvad2dgpu-sol.txt}
@@ -32,6 +32,7 @@ vals2 = get_var_vals(filename2)
 errors = []
 for i in range(len(vals1)):
     error = abs(vals1[i] - vals2[i]) / abs(vals1[i])
+    # error = abs(vals1[i] - vals2[i])
     errors.append(error)
 print(errors)
 print(f"max error {max(errors)}")

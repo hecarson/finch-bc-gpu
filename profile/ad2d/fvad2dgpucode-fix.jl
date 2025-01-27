@@ -1,11 +1,6 @@
 #=
 Note from Carson:
-This is the Finch generated solver code fvad2dgpucode.jl, but with manual fixes. Changes are annotated with FIX
-comments.
-
-This solver code performs finite volume assembly on GPU, but still computes boundary conditions on CPU. It produces the
-same solution as the CPU version at `example-advection2d-fv.jl`, with very small error, which is probably caused by
-differences between CPU and GPU floating point arithmetic.
+Copy of testing/ad2d/fvad2dgpucode-fix.jl
 =#
 
 #=

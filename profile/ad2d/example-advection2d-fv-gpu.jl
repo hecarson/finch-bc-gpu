@@ -1,6 +1,6 @@
 #=
 Note from Carson:
-The Finch examples does not have a GPU version of the advection2d example. This file is a GPU version of the example.
+Copy of testing/ad2d/example-advection2d-fv-gpu.jl, with minor changes for profiling
 =#
 
 #=
@@ -12,19 +12,17 @@ The Finch examples does not have a GPU version of the advection2d example. This 
 
 ### If not, use these four lines (working from the examples directory) ###
 # if !@isdefined(Finch)
-#     include("../Finch.jl");
+#     include("../../Finch/src/Finch.jl");
 #     using .Finch
 # end
-
-# Finch GPU code generation is buggy for advection2d, so use a patched version of Finch.
-# Details are in the project README.
 include("../../../Finch/src/Finch.jl")
 using .Finch
+using CUDA
 ##########################################################################
 
-initFinch("FVadvection2d");
+initFinch("advection2d");
 
-useLog("FVadvection2dlog", level=3)
+useLog("advection2dlog", level=3)
 
 # Configuration setup
 domain(2)
@@ -50,14 +48,15 @@ if use_unstructured
 else
     # a uniform grid of quads on a 0.1 x 0.3 rectangle domain
     # mesh(QUADMESH, elsperdim=[15, 45], bids=4, interval=[0, 0.1, 0, 0.3])
-    mesh(QUADMESH, elsperdim=[5, 5], bids=4, interval=[0, 0.1, 0, 0.3])
+    # mesh(QUADMESH, elsperdim=[10, 10], bids=4, interval=[0, 0.1, 0, 0.1])
+    # mesh(QUADMESH, elsperdim=[100, 100], bids=4, interval=[0, 0.1, 0, 0.1])
+    mesh(QUADMESH, elsperdim=[300, 300], bids=4, interval=[0, 0.1, 0, 0.1])
 end
 
 # Variables and BCs
 u = variable("u", location=CELL)
 
 @callbackFunction(
-    # boundary condition function
     function bc_f(t, y)
         return (abs(y-0.06) < 0.033 && sin(3*pi*t)>0) ? 1 : 0
     end
@@ -69,8 +68,11 @@ boundary(u, 3, NO_BC) # y=0
 boundary(u, 4, NO_BC) # y=0.3
 
 # Time interval and initial condition
-T = 1.3;
-timeInterval(T)
+# T = 1.3;
+# timeInterval(T)
+nsteps = 100
+dt = 1.3 / nsteps
+setSteps(dt, nsteps)
 initial(u, "0")
 
 # Coefficients
@@ -82,15 +84,13 @@ coefficient("s", ["0.1 * sin(pi*x)^4 * sin(pi*y)^4"]) # source
 conservationForm(u, "s + surface(upwind(a,u))");
 
 # exportCode("fvad2dgpucode") # uncomment to export generated code to a file
-# importCode("testing/ad2d/fvad2dgpucode-fix")
-importCode("testing/ad2d/fvad2dgpucode-fix-newkernel")
+# importCode("profile/ad2d/fvad2dgpucode-fix")
+importCode("profile/ad2d/fvad2dgpucode-fix-newkernel")
 
-solve(u)
-out_file = open("fvad2dgpu-sol.txt", "w")
-println(out_file, "u: $(u.values)")
-close(out_file)
+# solve(u)
+@CUDA.profile solve(u)
 
-# outputValues(u, "fvad2d", format="vtk");
+outputValues(u, "fvad2dgpu-vals", format="vtk");
 
 finalizeFinch()
 

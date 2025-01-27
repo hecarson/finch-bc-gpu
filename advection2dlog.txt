@@ -3,19 +3,19 @@
 ######################################
 (verbosity = 3)
 1.	Set time stepper to Euler-explicit
-2.	Building simple quad mesh with nx*nx elements, nx=[5, 5]
+2.	Building simple quad mesh with nx*nx elements, nx=[300, 300]
 3.	Building full grid from mesh data. Types = FV
 4.	Building reference element: 2D, order=1, nfaces=4
-5.	Initial node setup: 0.6632089614868164
-6.	Remove duplicate nodes: 1.528489112854004
-7.	Vertex, face, bdry setup: 0.2743802070617676
-8.	Remove duplicate bdry nodes: 0.03976893424987793
-9.	Total grid building time: 16.514551162719727
-10.	Added mesh with 36 vertices and 25 elements.
-11.	Full grid has 36 nodes.
-12.	Added boundary ID: 2 including [6, 0] nodes, [5, 0] faces.
-13.	Added boundary ID: 3 including [4, 0, 0] nodes, [5, 0, 0] faces.
-14.	Added boundary ID: 4 including [4, 0, 0, 0] nodes, [5, 0, 0, 0] faces.
+5.	Initial node setup: 1.5707330703735352
+6.	Remove duplicate nodes: 5.8880109786987305
+7.	Vertex, face, bdry setup: 4.957787990570068
+8.	Remove duplicate bdry nodes: 0.1392688751220703
+9.	Total grid building time: 24.19472098350525
+10.	Added mesh with 90601 vertices and 90000 elements.
+11.	Full grid has 90601 nodes.
+12.	Added boundary ID: 2 including [301, 0] nodes, [300, 0] faces.
+13.	Added boundary ID: 3 including [299, 0, 0] nodes, [300, 0, 0] faces.
+14.	Added boundary ID: 4 including [299, 0, 0, 0] nodes, [300, 0, 0, 0] faces.
 15.	Added variable: u of type: scalar, location: cell
 16.	Added callback function: bc_f
 17.	Generated function: genfunction_1
@@ -23,45 +23,46 @@
 19.	Boundary condition: var=u bid=2 type=No BC val=0.0
 20.	Boundary condition: var=u bid=3 type=No BC val=0.0
 21.	Boundary condition: var=u bid=4 type=No BC val=0.0
-22.	Generated function: genfunction_2
-23.	Initial condition for u : Union{Float64, GenFunction}[GenFunction("genfunction_2", "x::Union{Float64,Float64},y::Union{Float64,Float64},z::Union{Float64,Float64},t::Union{Float64,Float64},node_index::Int,face_index::Int,indices::Vector{Int}", "0", 0, Main.Finch.genfunction_2)]
-24.	Generated function: genfunction_3
-25.	Generated function: genfunction_4
-26.	Added coefficient a : ["0.1*cos(pi*x/2/0.1)", "0.3*sin(pi*x/2/0.1)"]
-27.	Generated function: genfunction_5
-28.	Added coefficient s : ["0.1 * sin(pi*x)^4 * sin(pi*y)^4"]
-29.	Making conservation form for variable(s): Any[:u]
-30.	Conservation form, input: ["s + surface(upwind(a,u))"]
-31.	SP expr = Any[:(s + surface(upwind(a, u)))]
-32.	SP insert parameters -> Any[:(s + surface(upwind(a, u)))]
-33.	SP replace symbols -> Any[:(SymEngine.Basic[_s_1] + (finch_state.ops[5]).op((finch_state.ops[28]).op(SymEngine.Basic[_a_1, _a_2], SymEngine.Basic[_u_1])))]
-34.	SP handle callbacks -> Any[:(SymEngine.Basic[_s_1] + (finch_state.ops[5]).op((finch_state.ops[28]).op(SymEngine.Basic[_a_1, _a_2], SymEngine.Basic[_u_1])))]
-35.	SP apply ops -> Any[SymEngine.Basic[_s_1 + conditional(isgreaterthan(_a_1*_FACENORMAL1_1 + _a_2*_FACENORMAL1_2, 0), (_a_1*_FACENORMAL1_1 + _a_2*_FACENORMAL1_2)*CELL1__u_1, (_a_1*_FACENORMAL1_1 + _a_2*_FACENORMAL1_2)*CELL2__u_1)*SURFACEINTEGRAL]]
-36.	expanded: _s_1 + conditional(isgreaterthan(_a_1*_FACENORMAL1_1 + _a_2*_FACENORMAL1_2, 0), (_a_1*_FACENORMAL1_1 + _a_2*_FACENORMAL1_2)*CELL1__u_1, (_a_1*_FACENORMAL1_1 + _a_2*_FACENORMAL1_2)*CELL2__u_1)*SURFACEINTEGRAL
-37.	Basic->Expr: _s_1 + conditional(isgreaterthan(_a_1 * _FACENORMAL1_1 + _a_2 * _FACENORMAL1_2, 0), (_a_1 * _FACENORMAL1_1 + _a_2 * _FACENORMAL1_2) * CELL1__u_1, (_a_1 * _FACENORMAL1_1 + _a_2 * _FACENORMAL1_2) * CELL2__u_1) * SURFACEINTEGRAL
-38.	SP sterms = Vector{Vector{SymEngine.Basic}}[[[_s_1, conditional(isgreaterthan(_a_1*_FACENORMAL1_1 + _a_2*_FACENORMAL1_2, 0), (_a_1*_FACENORMAL1_1 + _a_2*_FACENORMAL1_2)*CELL1__u_1, (_a_1*_FACENORMAL1_1 + _a_2*_FACENORMAL1_2)*CELL2__u_1)*SURFACEINTEGRAL]]]
-39.	SP LHS = Vector{Vector{SymEngine.Basic}}[[[]]]
-40.	SP RHS = Vector{Vector{SymEngine.Basic}}[[[-_s_1]]]
-41.	SP surfLHS = Vector{Vector{SymEngine.Basic}}[[[conditional(isgreaterthan(_a_1*_FACENORMAL1_1 + _a_2*_FACENORMAL1_2, 0), (_a_1*_FACENORMAL1_1 + _a_2*_FACENORMAL1_2)*CELL1__u_1, (_a_1*_FACENORMAL1_1 + _a_2*_FACENORMAL1_2)*CELL2__u_1)]]]
-42.	SP surfRHS = Vector{Vector{SymEngine.Basic}}[[[]]]
-43.	SP NONLINEAR = Vector{Vector{SymEngine.Basic}}[[[]]]
-44.	Linearized: Vector{Vector{SymEngine.Basic}}[[[]]] + surface(Vector{Vector{SymEngine.Basic}}[[[conditional(isgreaterthan(_a_1*_FACENORMAL1_1 + _a_2*_FACENORMAL1_2, 0), (_a_1*_FACENORMAL1_1 + _a_2*_FACENORMAL1_2)*CELL1__u_1, (_a_1*_FACENORMAL1_1 + _a_2*_FACENORMAL1_2)*CELL2__u_1)]]]) = Vector{Vector{SymEngine.Basic}}[[[-_s_1]]] + surface(Vector{Vector{SymEngine.Basic}}[[[]]])
-45.	flux, before modifying for time: Vector{Vector{SymEngine.Basic}}[[[conditional(isgreaterthan(_a_1*_FACENORMAL1_1 + _a_2*_FACENORMAL1_2, 0), (_a_1*_FACENORMAL1_1 + _a_2*_FACENORMAL1_2)*CELL1__u_1, (_a_1*_FACENORMAL1_1 + _a_2*_FACENORMAL1_2)*CELL2__u_1)]]] - Vector{Vector{SymEngine.Basic}}[[[]]]
-46.	flux, modified for time stepping: Vector{Vector{SymEngine.Basic}}[[[]]] + Vector{Vector{SymEngine.Basic}}[[[-conditional(isgreaterthan(_a_1*_FACENORMAL1_1 + _a_2*_FACENORMAL1_2, 0), (_a_1*_FACENORMAL1_1 + _a_2*_FACENORMAL1_2)*CELL1__u_1, (_a_1*_FACENORMAL1_1 + _a_2*_FACENORMAL1_2)*CELL2__u_1)]]]
-47.	source, before modifying for time: Vector{Vector{SymEngine.Basic}}[[[]]] - Vector{Vector{SymEngine.Basic}}[[[-_s_1]]]
-48.	source, modified for time stepping: Vector{Vector{SymEngine.Basic}}[[[]]] + Vector{Vector{SymEngine.Basic}}[[[_s_1]]]
-49.	lhs symexpression:
+22.	Set time stepper values to dt=0.013000000000000001, Nsteps=100
+23.	Generated function: genfunction_2
+24.	Initial condition for u : Union{Float64, GenFunction}[GenFunction("genfunction_2", "x::Union{Float64,Float64},y::Union{Float64,Float64},z::Union{Float64,Float64},t::Union{Float64,Float64},node_index::Int,face_index::Int,indices::Vector{Int}", "0", 0, Main.Finch.genfunction_2)]
+25.	Generated function: genfunction_3
+26.	Generated function: genfunction_4
+27.	Added coefficient a : ["0.1*cos(pi*x/2/0.1)", "0.3*sin(pi*x/2/0.1)"]
+28.	Generated function: genfunction_5
+29.	Added coefficient s : ["0.1 * sin(pi*x)^4 * sin(pi*y)^4"]
+30.	Making conservation form for variable(s): Any[:u]
+31.	Conservation form, input: ["s + surface(upwind(a,u))"]
+32.	SP expr = Any[:(s + surface(upwind(a, u)))]
+33.	SP insert parameters -> Any[:(s + surface(upwind(a, u)))]
+34.	SP replace symbols -> Any[:(SymEngine.Basic[_s_1] + (finch_state.ops[5]).op((finch_state.ops[28]).op(SymEngine.Basic[_a_1, _a_2], SymEngine.Basic[_u_1])))]
+35.	SP handle callbacks -> Any[:(SymEngine.Basic[_s_1] + (finch_state.ops[5]).op((finch_state.ops[28]).op(SymEngine.Basic[_a_1, _a_2], SymEngine.Basic[_u_1])))]
+36.	SP apply ops -> Any[SymEngine.Basic[_s_1 + conditional(isgreaterthan(_a_1*_FACENORMAL1_1 + _a_2*_FACENORMAL1_2, 0), (_a_1*_FACENORMAL1_1 + _a_2*_FACENORMAL1_2)*CELL1__u_1, (_a_1*_FACENORMAL1_1 + _a_2*_FACENORMAL1_2)*CELL2__u_1)*SURFACEINTEGRAL]]
+37.	expanded: _s_1 + conditional(isgreaterthan(_a_1*_FACENORMAL1_1 + _a_2*_FACENORMAL1_2, 0), (_a_1*_FACENORMAL1_1 + _a_2*_FACENORMAL1_2)*CELL1__u_1, (_a_1*_FACENORMAL1_1 + _a_2*_FACENORMAL1_2)*CELL2__u_1)*SURFACEINTEGRAL
+38.	Basic->Expr: _s_1 + conditional(isgreaterthan(_a_1 * _FACENORMAL1_1 + _a_2 * _FACENORMAL1_2, 0), (_a_1 * _FACENORMAL1_1 + _a_2 * _FACENORMAL1_2) * CELL1__u_1, (_a_1 * _FACENORMAL1_1 + _a_2 * _FACENORMAL1_2) * CELL2__u_1) * SURFACEINTEGRAL
+39.	SP sterms = Vector{Vector{SymEngine.Basic}}[[[_s_1, conditional(isgreaterthan(_a_1*_FACENORMAL1_1 + _a_2*_FACENORMAL1_2, 0), (_a_1*_FACENORMAL1_1 + _a_2*_FACENORMAL1_2)*CELL1__u_1, (_a_1*_FACENORMAL1_1 + _a_2*_FACENORMAL1_2)*CELL2__u_1)*SURFACEINTEGRAL]]]
+40.	SP LHS = Vector{Vector{SymEngine.Basic}}[[[]]]
+41.	SP RHS = Vector{Vector{SymEngine.Basic}}[[[-_s_1]]]
+42.	SP surfLHS = Vector{Vector{SymEngine.Basic}}[[[conditional(isgreaterthan(_a_1*_FACENORMAL1_1 + _a_2*_FACENORMAL1_2, 0), (_a_1*_FACENORMAL1_1 + _a_2*_FACENORMAL1_2)*CELL1__u_1, (_a_1*_FACENORMAL1_1 + _a_2*_FACENORMAL1_2)*CELL2__u_1)]]]
+43.	SP surfRHS = Vector{Vector{SymEngine.Basic}}[[[]]]
+44.	SP NONLINEAR = Vector{Vector{SymEngine.Basic}}[[[]]]
+45.	Linearized: Vector{Vector{SymEngine.Basic}}[[[]]] + surface(Vector{Vector{SymEngine.Basic}}[[[conditional(isgreaterthan(_a_1*_FACENORMAL1_1 + _a_2*_FACENORMAL1_2, 0), (_a_1*_FACENORMAL1_1 + _a_2*_FACENORMAL1_2)*CELL1__u_1, (_a_1*_FACENORMAL1_1 + _a_2*_FACENORMAL1_2)*CELL2__u_1)]]]) = Vector{Vector{SymEngine.Basic}}[[[-_s_1]]] + surface(Vector{Vector{SymEngine.Basic}}[[[]]])
+46.	flux, before modifying for time: Vector{Vector{SymEngine.Basic}}[[[conditional(isgreaterthan(_a_1*_FACENORMAL1_1 + _a_2*_FACENORMAL1_2, 0), (_a_1*_FACENORMAL1_1 + _a_2*_FACENORMAL1_2)*CELL1__u_1, (_a_1*_FACENORMAL1_1 + _a_2*_FACENORMAL1_2)*CELL2__u_1)]]] - Vector{Vector{SymEngine.Basic}}[[[]]]
+47.	flux, modified for time stepping: Vector{Vector{SymEngine.Basic}}[[[]]] + Vector{Vector{SymEngine.Basic}}[[[-conditional(isgreaterthan(_a_1*_FACENORMAL1_1 + _a_2*_FACENORMAL1_2, 0), (_a_1*_FACENORMAL1_1 + _a_2*_FACENORMAL1_2)*CELL1__u_1, (_a_1*_FACENORMAL1_1 + _a_2*_FACENORMAL1_2)*CELL2__u_1)]]]
+48.	source, before modifying for time: Vector{Vector{SymEngine.Basic}}[[[]]] - Vector{Vector{SymEngine.Basic}}[[[-_s_1]]]
+49.	source, modified for time stepping: Vector{Vector{SymEngine.Basic}}[[[]]] + Vector{Vector{SymEngine.Basic}}[[[_s_1]]]
+50.	lhs symexpression:
 	Any[Any[Any[]]]
-50.	rhs symexpression:
+51.	rhs symexpression:
 	Any[Any[Any[SymExpression(s_1, Any[s_1])]]]
-51.	lhs surface symexpression:
+52.	lhs surface symexpression:
 	Any[Any[Any[]]]
-52.	rhs surface symexpression:
+53.	rhs surface symexpression:
 	Any[Any[Any[SymExpression(:(-(conditional_function(a_1 * FACENORMAL1_1 + a_2 * FACENORMAL1_2 > 0, (a_1 * FACENORMAL1_1 + a_2 * FACENORMAL1_2) * CELL1u_1, (a_1 * FACENORMAL1_1 + a_2 * FACENORMAL1_2) * CELL2u_1))), Any[a_1, FACENORMAL1_1, a_2, FACENORMAL1_2, a_1, FACENORMAL1_1, a_2, FACENORMAL1_2, CELL1u_1, a_1, FACENORMAL1_1, a_2, FACENORMAL1_2, CELL2u_1])]]]
-53.	Latex equation:
+54.	Latex equation:
 		Latex equation:
 		$ \int_{K}\left[\left[\right]\right] dx + \int_{\partial K}\left[\left[\right]\right] ds = \int_{K}\left[\left[s_{1}\right]\right] dx + \int_{\partial K}\left[\left[-\left(conditional\left(>\left(\left(a_{1} * normal_{1}\right) + \left(a_{2} * normal_{2}\right), 0\right), \left(\left(a_{1} * normal_{1}\right) + \left(a_{2} * normal_{2}\right)\right) * u_{1+}, \left(\left(a_{1} * normal_{1}\right) + \left(a_{2} * normal_{2}\right)\right) * u_{1-}\right)\right)\right]\right] ds
-54.	Conservation form IR: block:
+55.	Conservation form IR: block:
 ├─ TIMER
 │  ├─ allocate
 │  └─ block:allocation
@@ -550,7 +551,7 @@
                            │     └─ nothing
                            └─ nothing
 
-55.	Code layer: 
+56.	Code layer: 
 function generated_solve_function_for_u(var::Vector{Variable{FT}}, mesh::Grid, refel::Refel, geometric_factors::GeometricFactors, fv_info::FVInfo, config::FinchConfig, coefficients::Vector{Coefficient}, variables::Vector{Variable{FT}}, test_functions::Vector{Coefficient}, ordered_indexers::Vector{Indexer}, prob::FinchProblem, time_stepper::Stepper, buffers::ParallelBuffers, timer_output::TimerOutput, nl_var=nothing) where FT<:AbstractFloat
     
     # User specified data types for int and float
@@ -787,35 +788,36 @@ end # function
 
 
 
-56.	Generated function: generated_solve_function_for_u(var::Vector{Variable{FT}}, mesh::Grid, refel::Refel, geometric_factors::GeometricFactors, fv_info::FVInfo, config::FinchConfig, coefficients::Vector{Coefficient}, variables::Vector{Variable{FT}}, test_functions::Vector{Coefficient}, ordered_indexers::Vector{Indexer}, prob::FinchProblem, time_stepper::Stepper, buffers::ParallelBuffers, timer_output::TimerOutput, nl_var = nothing)
 57.	Generated function: generated_solve_function_for_u(var::Vector{Variable{FT}}, mesh::Grid, refel::Refel, geometric_factors::GeometricFactors, fv_info::FVInfo, config::FinchConfig, coefficients::Vector{Coefficient}, variables::Vector{Variable{FT}}, test_functions::Vector{Coefficient}, ordered_indexers::Vector{Indexer}, prob::FinchProblem, time_stepper::Stepper, buffers::ParallelBuffers, timer_output::TimerOutput, nl_var = nothing)
-58.	Imported code from testing/fvad2dgpucode-fix.jl
-59.	Built initial conditions for: u
-60.	Indexed variables detected, but no assembly loops specified. Using default.
-61.	Solved for [u]
-62.	Closed generated code files.
-63.	────────────────────────────────────────────────────────────────────────────────
+58.	Generated function: generated_solve_function_for_u(var::Vector{Variable{FT}}, mesh::Grid, refel::Refel, geometric_factors::GeometricFactors, fv_info::FVInfo, config::FinchConfig, coefficients::Vector{Coefficient}, variables::Vector{Variable{FT}}, test_functions::Vector{Coefficient}, ordered_indexers::Vector{Indexer}, prob::FinchProblem, time_stepper::Stepper, buffers::ParallelBuffers, timer_output::TimerOutput, nl_var = nothing)
+59.	Imported code from profile/ad2d/fvad2dgpucode-fix-newkernel.jl
+60.	Built initial conditions for: u
+61.	Indexed variables detected, but no assembly loops specified. Using default.
+62.	Solved for [u]
+63.	Writing values to file: fvad2dgpu-vals.vtu
+64.	Closed generated code files.
+65.	────────────────────────────────────────────────────────────────────────────────
                                        Time                    Allocations      
                               ───────────────────────   ────────────────────────
-      Tot / % measured:             107s /  74.3%           4.71GiB /  35.8%    
+      Tot / % measured:            96.3s /  75.8%           11.2GiB /  68.5%    
 
 Section               ncalls     time    %tot     avg     alloc    %tot      avg
 ────────────────────────────────────────────────────────────────────────────────
-Mesh                       1    35.6s   44.7%   35.6s    519MiB   30.1%   519MiB
-  mesh2grid                1    16.6s   20.8%   16.6s    269MiB   15.6%   269MiB
-  bids                     1    1.39s    1.7%   1.39s   67.9MiB    3.9%  67.9MiB
-  geo factors              1    802ms    1.0%   802ms   18.9MiB    1.1%  18.9MiB
-    fv_info                1    139ms    0.2%   139ms   4.09MiB    0.2%  4.09MiB
-  gen/read                 1    699ms    0.9%   699ms   8.71MiB    0.5%  8.71MiB
-CodeGen                    1    26.7s   33.5%   26.7s    510MiB   29.6%   510MiB
-Solve                      1    17.3s   21.8%   17.3s    697MiB   40.4%   697MiB
-  FV_solve                 1    16.7s   21.0%   16.7s    665MiB   38.5%   665MiB
-    time_steps             1    12.3s   15.4%   12.3s    544MiB   31.5%   544MiB
-      step_assembly    4.33k    12.2s   15.3%  2.81ms    539MiB   31.2%   127KiB
-        bdry_vals      4.33k   70.9ms    0.1%  16.3μs   13.9MiB    0.8%  3.29KiB
-      update_sol       4.33k   2.61ms    0.0%   602ns     0.00B    0.0%    0.00B
-    GPU alloc              1    156ms    0.2%   156ms   1.03MiB    0.1%  1.03MiB
-    allocate               1   4.34μs    0.0%  4.34μs   1.64KiB    0.0%  1.64KiB
+Mesh                       1    40.1s   55.0%   40.1s   6.32GiB   82.6%  6.32GiB
+  mesh2grid                1    24.2s   33.2%   24.2s   5.51GiB   72.0%  5.51GiB
+  geo factors              1    3.08s    4.2%   3.08s    546MiB    7.0%   546MiB
+    fv_info                1    1.43s    2.0%   1.43s    164MiB    2.1%   164MiB
+  bids                     1    985ms    1.4%   985ms   72.5MiB    0.9%  72.5MiB
+  gen/read                 1    535ms    0.7%   535ms   56.9MiB    0.7%  56.9MiB
+CodeGen                    1    19.0s   26.1%   19.0s    510MiB    6.5%   510MiB
+Solve                      1    13.8s   18.9%   13.8s    849MiB   10.8%   849MiB
+  FV_solve                 1    13.3s   18.2%   13.3s    768MiB    9.8%   768MiB
+    GPU alloc              1    6.49s    8.9%   6.49s    399MiB    5.1%   399MiB
+    time_steps             1    2.79s    3.8%   2.79s    152MiB    1.9%   152MiB
+      step_assembly      100    2.62s    3.6%  26.2ms    147MiB    1.9%  1.47MiB
+        bdry_vals        100    647ms    0.9%  6.47ms   25.7MiB    0.3%   263KiB
+      update_sol         100    160ms    0.2%  1.60ms   4.46MiB    0.1%  45.7KiB
+    allocate               1    368μs    0.0%   368μs   3.61MiB    0.0%  3.61MiB
 ────────────────────────────────────────────────────────────────────────────────
 
-64.	Completed. Closing Log.
+66.	Completed. Closing Log.

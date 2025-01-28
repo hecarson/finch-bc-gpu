@@ -20,16 +20,16 @@ using .Finch
 using CUDA
 ##########################################################################
 
-initFinch("advection2d");
+initFinch("FVadvection2d");
 
-useLog("advection2dlog", level=3)
+useLog("FVadvection2dlog", level=3)
 
 # Configuration setup
 domain(2)
 solverType(FV)
 
+# CHANGED
 # timeStepper(EULER_IMPLICIT)
-# FIX
 timeStepper(EULER_EXPLICIT)
 
 Finch.finch_state.config.use_gpu = true
@@ -68,11 +68,11 @@ boundary(u, 3, NO_BC) # y=0
 boundary(u, 4, NO_BC) # y=0.3
 
 # Time interval and initial condition
-# T = 1.3;
-# timeInterval(T)
-nsteps = 100
-dt = 1.3 / nsteps
-setSteps(dt, nsteps)
+T = 1.3;
+timeInterval(T)
+# nsteps = 100
+# dt = 1.3 / nsteps
+# setSteps(dt, nsteps)
 initial(u, "0")
 
 # Coefficients
@@ -90,7 +90,7 @@ importCode("profile/ad2d/fvad2dgpucode-fix-newkernel")
 # solve(u)
 @CUDA.profile solve(u)
 
-outputValues(u, "fvad2dgpu-vals", format="vtk");
+# outputValues(u, "fvad2dgpu-vals", format="vtk");
 
 finalizeFinch()
 

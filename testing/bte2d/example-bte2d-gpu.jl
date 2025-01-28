@@ -1,6 +1,6 @@
 #=
 Note from Carson:
-Modified Finch file for the BTE 2D example by Amarnath, with further small modifications
+Modified Finch script for the BTE 2D example made by Amarnath, with further small modifications
 =#
 
 #=

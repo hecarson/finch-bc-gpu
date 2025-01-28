@@ -46,7 +46,7 @@ function gpu_assembly_kernel(mesh_elemental_order_gpu, fv_info_cellCenters_gpu, 
         x = fv_info_cellCenters_gpu[1, eid]
         y = fv_info_cellCenters_gpu[2, eid]
         z = 0.0
-        # FIX: genfunction_5 is not defined, so replace it with corresponding expression in Finch file
+        # FIX: genfunction_5 is not defined, so replace it with corresponding expression in Finch script
         # value__s_1_gpu = Float64(genfunction_5(x,y,z,t,eid, 0, index_values))
         value__s_1_gpu = Float64(0.1 * sin(pi*x)^4 * sin(pi*y)^4)
         volume = geometric_factors_volume_gpu[eid]

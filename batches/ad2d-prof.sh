@@ -4,8 +4,8 @@
 #SBATCH --partition=notchpeak-gpu-guest
 #SBATCH -n 1
 #SBATCH --gres=gpu:2080ti:1
-#SBATCH -o batch-ad2d-prof-out.txt
-#SBATCH -e batch-ad2d-prof-err.txt
+#SBATCH -o ad2d-prof-out.txt
+#SBATCH -e ad2d-prof-err.txt
 
 module load julia/1.9.2 cuda
 cd ~/finch-bc-gpu
